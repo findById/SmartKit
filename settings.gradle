@@ -1,0 +1,1 @@
+include ':app', ':plugin-airkiss', ':plugin-voice', ':plugin-message', ':plugin-rpc', ':toolkit'
