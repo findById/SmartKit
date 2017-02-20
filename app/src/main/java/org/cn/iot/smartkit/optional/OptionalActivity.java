@@ -53,9 +53,9 @@ public class OptionalActivity extends AppCompatActivity {
         }
 
         private void initData() {
-            Preference api = findPreference("pre_api_host");
+            Preference api = findPreference(OptionalConst.KEY_API_HOST);
             api.setOnPreferenceChangeListener(listener);
-            api.setSummary(OptionalManager.getString("pre_api_host", "http://127.0.0.1:8080"));
+            api.setSummary(OptionalManager.getString(OptionalConst.KEY_API_HOST, "http://127.0.0.1:8080"));
 
             // mqtt server
             Preference mqtt_message_server = findPreference("mqtt_message_server");

@@ -38,6 +38,13 @@
         <activity
             android:name=".optional.OptionalActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="org.cn.iot.device.DeviceListActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="org.cn.iot.device.DeviceActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

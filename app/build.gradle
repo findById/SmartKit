@@ -34,4 +34,5 @@ dependencies {
     compile project(':plugin-airkiss')
     compile project(':plugin-message')
     compile project(':plugin-voice')
+    compile project(':plugin-device')
 }

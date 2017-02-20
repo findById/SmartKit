@@ -67,7 +67,7 @@ public class SmartConfigActivity extends AppCompatActivity {
         mBinding.mqttUserId.setText(sp.getString("mqtt_user_id", ""));
         mBinding.mqttUsername.setText(sp.getString("mqtt_username", ""));
         mBinding.mqttPassword.setText(sp.getString("mqtt_password", ""));
-        mBinding.clientName.setText(sp.getString("client_name", ""));
+        mBinding.deviceName.setText(sp.getString("device_name", ""));
         mBinding.updateServer.setText(sp.getString("update_server", ""));
         mBinding.token.setText(sp.getString("token", ""));
 
@@ -117,7 +117,7 @@ public class SmartConfigActivity extends AppCompatActivity {
         spe.putString("mqtt_username", mBinding.mqttUsername.getText().toString());
         spe.putString("mqtt_password", mBinding.mqttPassword.getText().toString());
         spe.putString("update_server", mBinding.updateServer.getText().toString());
-        spe.putString("client_name", mBinding.clientName.getText().toString());
+        spe.putString("device_name", mBinding.deviceName.getText().toString());
         spe.putString("token", mBinding.token.getText().toString());
         spe.commit();
 
@@ -264,7 +264,7 @@ public class SmartConfigActivity extends AppCompatActivity {
         map.put("mqtt_username", sp.getString("mqtt_username", ""));
         map.put("mqtt_password", sp.getString("mqtt_password", ""));
         map.put("update_server", sp.getString("update_server", ""));
-        map.put("client_name", sp.getString("client_name", ""));
+        map.put("device_name", sp.getString("device_name", ""));
         map.put("token", sp.getString("token", ""));
     }
 

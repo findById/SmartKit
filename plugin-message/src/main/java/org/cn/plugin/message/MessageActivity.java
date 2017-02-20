@@ -8,8 +8,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,14 +25,20 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
 import org.cn.plugin.message.adapter.MessageAdapter;
 import org.cn.plugin.message.databinding.ActivityMessageBinding;
 import org.cn.plugin.message.model.Message;
 import org.cn.plugin.message.model.MessageType;
-import org.cn.plugin.message.service.MessageService;
 import org.cn.plugin.message.utils.KeyboardUtil;
 import org.cn.plugin.message.utils.OrmHelper;
 import org.cn.plugin.message.utils.PermissionManager;
+import org.cn.plugin.rpc.Response;
+import org.cn.plugin.rpc.ResponseListener;
+import org.cn.plugin.rpc.RpcEngine;
+import org.cn.plugin.voice.TextToAudio;
 import org.cn.plugin.voice.VoiceHandler;
 
 import java.util.List;
@@ -213,37 +223,103 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void sendMessage(String message) {
+        if ("停".equals(message)) {
+            if (mp != null && mp.isPlaying()) {
+                mp.pause();
+                return;
+            }
+        } else if ("继续".equals(message)) {
+            if (mp != null && !mp.isPlaying()) {
+                mp.start();
+                return;
+            }
+        } else if ("再说一遍".equals(message)) {
+            if (mp != null && !mp.isPlaying() && !TextUtils.isEmpty(lastAudio)) {
+                playAudio(lastAudio);
+                return;
+            }
+        }
+
         Message bean = new Message(userId, "", MessageType.TEXT, message);
         bean.read = "1";
 
         mMessageAdapter.add(bean);
 
-        if (message.startsWith("控制") && message.length() > 2) {
-            boolean success = true;
-            if (message.indexOf("开灯") > 0) {
-                bean.consumerId = "hardware";
-
-                MessageService.publish(this, bean.consumerId, "1");
-            } else if (message.indexOf("关灯") > 0) {
-                bean.consumerId = "hardware";
-
-                MessageService.publish(this, bean.consumerId, "0");
-            } else {
-                success = false;
-            }
-            if (success) {
-                mMessageAdapter.add(new Message(userId, "", MessageType.NOTIFY, message.substring(2, message.length())));
-            } else {
-                mMessageAdapter.add(new Message(userId, "", MessageType.NOTIFY, "没有找到设备(" + message.substring(2, message.length()) + ")"));
-            }
-        }
-
         OrmHelper.getInstance().insert(bean);
+
+        JSONObject param = new JSONObject();
+        param.put("userId", MessageActivity.userId);
+        param.put("content", message);
+        param.put("timestamp", System.currentTimeMillis());
+        RpcEngine.post(MessageConst.API_HOST + "/iot/message", param.toString(), new ResponseListener<Response>() {
+            @Override
+            public void onResponse(final Response response) {
+                try {
+                    JSONObject obj = JSON.parseObject(response.result);
+                    int statusCode = obj.getInteger("statusCode");
+                    if (statusCode != 200) {
+                        handleMessage(new Message("sys", "", MessageType.NOTIFY, obj.getString("message")));
+                        return;
+                    }
+                    JSONObject result = obj.getJSONObject("result");
+
+                    String msgType = result.getString("msgType");
+                    String msg = result.getString("content");
+
+                    handleMessage(new Message("ai", userId, msgType, msg));
+
+                    if (MessageType.TEXT.equals(msgType)) {
+                        playMessage(msg);
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
     private void handleMessage(Message message) {
         mMessageAdapter.add(message);
+        OrmHelper.getInstance().insert(message);
 
+    }
+
+    private void playMessage(String text) {
+        final String path = Environment.getExternalStorageDirectory() + "/audio.mp3";
+        TextToAudio.send(text, path, new TextToAudio.HttpListener() {
+            @Override
+            public void onResult(int statusCode, String result) {
+                if (statusCode != 200) {
+                    TextToAudio.getToken(null);
+                    return;
+                }
+
+                playAudio(path);
+            }
+        });
+    }
+
+    private Handler mHandler = new Handler(Looper.getMainLooper());
+    MediaPlayer mp = new MediaPlayer();
+    String lastAudio;
+
+    private void playAudio(String path) {
+        try {
+            lastAudio = path;
+            mp.reset();
+            mp.setDataSource(path);
+            mp.prepare();
+            mp.start();
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                }
+            });
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {

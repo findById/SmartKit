@@ -3,7 +3,7 @@
     <PreferenceCategory android:title="API服务器">
         <EditTextPreference
             android:defaultValue="http://192.168.99.111:8080"
-            android:key="pre_api_host"
+            android:key="api_host"
             android:summary="服务器地址"
             android:title="服务器地址" />
     </PreferenceCategory>

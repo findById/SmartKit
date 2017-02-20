@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.cn.iot.device.DeviceListActivity;
 import org.cn.iot.smartkit.utils.PermissionUtils;
 import org.cn.plugin.airkiss.SmartConfigActivity;
 import org.cn.plugin.message.MessageActivity;
@@ -29,6 +30,7 @@ public class MainActivityFragment extends BaseFragment implements View.OnClickLi
     private void initView(View view) {
         view.findViewById(R.id.smart_config).setOnClickListener(this);
         view.findViewById(R.id.message).setOnClickListener(this);
+        view.findViewById(R.id.device).setOnClickListener(this);
     }
 
     @Override
@@ -50,6 +52,11 @@ public class MainActivityFragment extends BaseFragment implements View.OnClickLi
             }
             case R.id.message: {
                 Intent intent = new Intent(getContext(), MessageActivity.class);
+                startActivity(intent);
+                break;
+            }
+            case R.id.device: {
+                Intent intent = new Intent(getContext(), DeviceListActivity.class);
                 startActivity(intent);
                 break;
             }

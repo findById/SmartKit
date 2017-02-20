@@ -54,7 +54,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     public void add(Message message) {
         mData.add(message);
-        notifyItemChanged(getItemCount() + 1);
+        notifyItemInserted(getItemCount());
         mRecyclerView.smoothScrollToPosition(getItemCount());
     }
 
@@ -64,7 +64,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
         int position = getItemCount();
         mData.addAll(messageList);
-        notifyItemRangeChanged(position, getItemCount() + 1);
+        notifyItemRangeChanged(position, getItemCount());
         mRecyclerView.smoothScrollToPosition(getItemCount());
     }
 
