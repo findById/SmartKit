@@ -34,9 +34,9 @@ public class CoreApplication extends Application {
         DeviceConst.API_HOST = API_HOST;
 
         MessageConst.API_HOST = API_HOST;
-        MessageConst.host = OptionalManager.getString("mqtt_message_server", "tcp://192.168.99.111:61613");
-        MessageConst.username = OptionalManager.getString("mqtt_message_username", "admin");
-        MessageConst.password = OptionalManager.getString("mqtt_message_password", "password");
+        MessageConst.host = OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_ADDR, "");
+        MessageConst.username = OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_USERNAME, "");
+        MessageConst.password = OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_PASSWORD, "");
         MessageService.start(getApplicationContext());
 
         init();

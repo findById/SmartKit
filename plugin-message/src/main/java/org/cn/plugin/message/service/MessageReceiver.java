@@ -8,10 +8,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.NotificationCompat;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
 import org.cn.plugin.message.MessageActivity;
 import org.cn.plugin.message.R;
 import org.cn.plugin.message.model.Message;
-import org.cn.plugin.message.utils.OrmHelper;
 
 public class MessageReceiver extends BroadcastReceiver {
 
@@ -21,17 +23,27 @@ public class MessageReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         switch (intent.getAction()) {
             case MessageService.ACTION_IOT_MESSAGE_ARRIVED: {
-                String id = intent.getStringExtra(MessageService.EXTRA_MESSAGE_ID);
-                String message = intent.getStringExtra(MessageService.EXTRA_MESSAGE_BODY);
+                String consumerId = intent.getStringExtra(MessageService.EXTRA_CONSUMER_ID);
+                String text = intent.getStringExtra(MessageService.EXTRA_MESSAGE_BODY);
+                try {
+                    JSONObject obj = JSON.parseObject(text);
+                    String msgType = obj.getString("type");
 
-                Message bean = new Message(id, MessageActivity.userId, "text", message);
-                OrmHelper.getInstance().insert(bean);
+                    Message message = new Message();
 
-                showNotification(context, bean);
+                    message.producerId = obj.getString("deviceId");
+                    message.consumerId = consumerId;
+                    message.msgType = msgType;
+                    message.body = obj.getString("body");
 
-                Intent msg = new Intent(MessageActivity.ACTION_MESSAGE);
-                msg.putExtra(MessageActivity.EXTRA_MESSAGE_DATA, bean);
-                context.sendBroadcast(msg);
+                    showNotification(context, message);
+
+                    Intent msg = new Intent(MessageActivity.ACTION_MESSAGE);
+                    msg.putExtra(MessageActivity.EXTRA_MESSAGE_DATA, message);
+                    context.sendBroadcast(msg);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
                 break;
             }
             default:
@@ -52,7 +64,7 @@ public class MessageReceiver extends BroadcastReceiver {
         builder.setPriority(Notification.PRIORITY_DEFAULT);
         builder.setAutoCancel(true);
         builder.setOngoing(false);
-        builder.setTicker("ticker");
+        builder.setTicker(message.body);
         builder.setStyle(new NotificationCompat.BigTextStyle().bigText(message.body));
         builder.setDefaults(Notification.DEFAULT_SOUND);
         builder.setSmallIcon(R.drawable.ic_launcher);

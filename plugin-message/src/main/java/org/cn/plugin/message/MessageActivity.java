@@ -25,19 +25,14 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-
 import org.cn.plugin.message.adapter.MessageAdapter;
 import org.cn.plugin.message.databinding.ActivityMessageBinding;
 import org.cn.plugin.message.model.Message;
 import org.cn.plugin.message.model.MessageType;
+import org.cn.plugin.message.service.MessageService;
 import org.cn.plugin.message.utils.KeyboardUtil;
 import org.cn.plugin.message.utils.OrmHelper;
 import org.cn.plugin.message.utils.PermissionManager;
-import org.cn.plugin.rpc.Response;
-import org.cn.plugin.rpc.ResponseListener;
-import org.cn.plugin.rpc.RpcEngine;
 import org.cn.plugin.voice.TextToAudio;
 import org.cn.plugin.voice.VoiceHandler;
 
@@ -247,35 +242,41 @@ public class MessageActivity extends AppCompatActivity {
 
         OrmHelper.getInstance().insert(bean);
 
-        JSONObject param = new JSONObject();
-        param.put("userId", MessageActivity.userId);
-        param.put("content", message);
-        param.put("timestamp", System.currentTimeMillis());
-        RpcEngine.post(MessageConst.API_HOST + "/iot/message", param.toString(), new ResponseListener<Response>() {
-            @Override
-            public void onResponse(final Response response) {
-                try {
-                    JSONObject obj = JSON.parseObject(response.result);
-                    int statusCode = obj.getInteger("statusCode");
-                    if (statusCode != 200) {
-                        handleMessage(new Message("sys", "", MessageType.NOTIFY, obj.getString("message")));
-                        return;
-                    }
-                    JSONObject result = obj.getJSONObject("result");
+        if ("开灯".equals(message)) {
+            MessageService.publish(this, "ESP8266", "2");
+        } else if ("关灯".equals(message)) {
+            MessageService.publish(this, "ESP8266", "1");
+        }
 
-                    String msgType = result.getString("msgType");
-                    String msg = result.getString("content");
-
-                    handleMessage(new Message("ai", userId, msgType, msg));
-
-                    if (MessageType.TEXT.equals(msgType)) {
-                        playMessage(msg);
-                    }
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+//        JSONObject param = new JSONObject();
+//        param.put("userId", MessageActivity.userId);
+//        param.put("content", message);
+//        param.put("timestamp", System.currentTimeMillis());
+//        RpcEngine.post(MessageConst.API_HOST + "/iot/message", param.toString(), new ResponseListener<Response>() {
+//            @Override
+//            public void onResponse(final Response response) {
+//                try {
+//                    JSONObject obj = JSON.parseObject(response.result);
+//                    int statusCode = obj.getInteger("statusCode");
+//                    if (statusCode != 200) {
+//                        handleMessage(new Message("sys", "", MessageType.NOTIFY, obj.getString("message")));
+//                        return;
+//                    }
+//                    JSONObject result = obj.getJSONObject("result");
+//
+//                    String msgType = result.getString("msgType");
+//                    String msg = result.getString("content");
+//
+//                    handleMessage(new Message("ai", userId, msgType, msg));
+//
+//                    if (MessageType.TEXT.equals(msgType)) {
+//                        playMessage(msg);
+//                    }
+//                } catch (Throwable e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
 
     }
 

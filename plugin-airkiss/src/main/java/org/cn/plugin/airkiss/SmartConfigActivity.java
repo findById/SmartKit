@@ -68,7 +68,6 @@ public class SmartConfigActivity extends AppCompatActivity {
         mBinding.mqttUsername.setText(sp.getString("mqtt_username", ""));
         mBinding.mqttPassword.setText(sp.getString("mqtt_password", ""));
         mBinding.deviceName.setText(sp.getString("device_name", ""));
-        mBinding.updateServer.setText(sp.getString("update_server", ""));
         mBinding.token.setText(sp.getString("token", ""));
 
         new Thread(new Runnable() {
@@ -116,7 +115,6 @@ public class SmartConfigActivity extends AppCompatActivity {
         spe.putString("mqtt_user_id", mBinding.mqttUserId.getText().toString());
         spe.putString("mqtt_username", mBinding.mqttUsername.getText().toString());
         spe.putString("mqtt_password", mBinding.mqttPassword.getText().toString());
-        spe.putString("update_server", mBinding.updateServer.getText().toString());
         spe.putString("device_name", mBinding.deviceName.getText().toString());
         spe.putString("token", mBinding.token.getText().toString());
         spe.commit();
@@ -263,7 +261,6 @@ public class SmartConfigActivity extends AppCompatActivity {
         map.put("mqtt_user_id", sp.getString("mqtt_user_id", ""));
         map.put("mqtt_username", sp.getString("mqtt_username", ""));
         map.put("mqtt_password", sp.getString("mqtt_password", ""));
-        map.put("update_server", sp.getString("update_server", ""));
         map.put("device_name", sp.getString("device_name", ""));
         map.put("token", sp.getString("token", ""));
     }
@@ -301,7 +298,7 @@ public class SmartConfigActivity extends AppCompatActivity {
                 socket.send(new DatagramPacket(buffer, buffer.length, packet.getAddress(), packet.getPort()));
                 System.out.println("send: " + key);
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                 }
             }

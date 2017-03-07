@@ -2,7 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="API服务器">
         <EditTextPreference
-            android:defaultValue="http://192.168.99.111:8080"
             android:key="api_host"
             android:summary="服务器地址"
             android:title="服务器地址" />
@@ -10,19 +9,23 @@
 
     <PreferenceCategory android:title="MQTT消息插件服务器(需要重启)">
         <EditTextPreference
-            android:defaultValue="tcp://192.168.99.111:61613"
             android:key="mqtt_message_server"
             android:summary="服务器地址"
             android:title="服务器地址" />
         <EditTextPreference
-            android:defaultValue="admin"
             android:key="mqtt_message_username"
-            android:summary="admin"
+            android:summary="用户名"
             android:title="用户名" />
         <EditTextPreference
-            android:defaultValue="password"
             android:key="mqtt_message_password"
-            android:summary="password"
+            android:summary="密码"
             android:title="密码" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="更多">
+        <PreferenceScreen
+            android:key="clean_message_cache"
+            android:summary="清空消息记录"
+            android:title="清空消息记录" />
     </PreferenceCategory>
 </PreferenceScreen>

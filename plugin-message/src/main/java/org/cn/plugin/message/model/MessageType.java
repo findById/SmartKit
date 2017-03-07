@@ -1,6 +1,7 @@
 package org.cn.plugin.message.model;
 
 public class MessageType {
-    public static final String TEXT = "text";
-    public static final String NOTIFY = "notify";
+    public static final String REPORT = "0";
+    public static final String NOTIFY = "1";
+    public static final String TEXT = "2";
 }

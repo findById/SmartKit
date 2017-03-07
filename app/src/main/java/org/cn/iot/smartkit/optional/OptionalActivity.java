@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import org.cn.iot.smartkit.R;
 import org.cn.iot.smartkit.databinding.ActivityOptionalBinding;
+import org.cn.plugin.message.utils.OrmHelper;
 
 public class OptionalActivity extends AppCompatActivity {
     public static final String ACTION_OPTIONAL = "action.optional";
@@ -58,23 +59,43 @@ public class OptionalActivity extends AppCompatActivity {
             api.setSummary(OptionalManager.getString(OptionalConst.KEY_API_HOST, "http://127.0.0.1:8080"));
 
             // mqtt server
-            Preference mqtt_message_server = findPreference("mqtt_message_server");
+            Preference mqtt_message_server = findPreference(OptionalConst.KEY_MQTT_SERVER_ADDR);
             mqtt_message_server.setOnPreferenceChangeListener(listener);
-            mqtt_message_server.setSummary(OptionalManager.getString("mqtt_message_server", "tcp://192.168.99.111:61613"));
+            mqtt_message_server.setSummary(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_ADDR, "tcp://192.168.99.111:61613"));
 
-            Preference mqtt_message_username = findPreference("mqtt_message_username");
+            Preference mqtt_message_username = findPreference(OptionalConst.KEY_MQTT_SERVER_USERNAME);
             mqtt_message_username.setOnPreferenceChangeListener(listener);
-            mqtt_message_username.setSummary(OptionalManager.getString("mqtt_message_username", "admin"));
+            mqtt_message_username.setSummary(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_USERNAME, "admin"));
 
-            Preference mqtt_message_password = findPreference("mqtt_message_password");
+            Preference mqtt_message_password = findPreference(OptionalConst.KEY_MQTT_SERVER_PASSWORD);
             mqtt_message_password.setOnPreferenceChangeListener(listener);
-            mqtt_message_password.setSummary(OptionalManager.getString("mqtt_message_password", "password"));
+            mqtt_message_password.setSummary(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_PASSWORD, "password"));
+
+            findPreference(OptionalConst.KEY_CLEAN_MESSAGE_CACHE).setOnPreferenceClickListener(clickListener);
         }
 
         private Preference.OnPreferenceChangeListener listener = new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 preference.setSummary(String.valueOf(newValue));
+                return true;
+            }
+        };
+
+        private Preference.OnPreferenceClickListener clickListener = new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                switch (preference.getKey()) {
+                    case OptionalConst.KEY_CLEAN_MESSAGE_CACHE: {
+                        try {
+                            OrmHelper.getInstance().getWritableDatabase().execSQL("DELETE FROM iot_message");
+                        } catch (Throwable e) {
+                        }
+                        break;
+                    }
+                    default:
+                        return false;
+                }
                 return true;
             }
         };
