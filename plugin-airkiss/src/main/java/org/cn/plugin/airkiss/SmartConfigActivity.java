@@ -3,15 +3,18 @@ package org.cn.plugin.airkiss;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.espressif.iot.esptouch.EsptouchTask;
@@ -54,6 +57,12 @@ public class SmartConfigActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        mBinding.apSsid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+            }
+        });
     }
 
     private void initData() {
@@ -105,8 +114,13 @@ public class SmartConfigActivity extends AppCompatActivity {
     }
 
     private void getSsid() {
-        String apSsid = mWifiAdmin.getWifiConnectedSsid();
-        mBinding.apSsid.setText(TextUtils.isEmpty(apSsid) ? "" : apSsid);
+        mBinding.apSsid.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String apSsid = mWifiAdmin.getWifiConnectedSsid();
+                mBinding.apSsid.setText(TextUtils.isEmpty(apSsid) ? "" : apSsid);
+            }
+        }, 200);
     }
 
     private void start() {

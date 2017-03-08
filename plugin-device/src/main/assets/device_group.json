@@ -4,11 +4,5 @@
     "name": "title",
     "desc": "desc",
     "action": "action"
-  },
-  {
-    "id": "id",
-    "name": "title",
-    "desc": "desc",
-    "action": "action"
   }
 ]

@@ -48,13 +48,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
-                        android:text="SSID:" />
+                        android:text="Wi-Fi名称" />
 
-                    <TextView
+                    <EditText
                         android:id="@+id/apSsid"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_marginLeft="5dp"
+                        android:focusableInTouchMode="false"
                         android:gravity="center_vertical"
+                        android:hint="请选择Wi-Fi SSID"
+                        android:inputType="none"
                         android:text="@{ssid}" />
                 </LinearLayout>
 
@@ -67,14 +71,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
-                        android:text="Password:" />
+                        android:text="Wi-Fi密码" />
 
                     <EditText
                         android:id="@+id/apPassword"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_marginLeft="5dp"
                         android:gravity="center_vertical"
-                        android:hint="AP Password"
+                        android:hint="请输入Wi-Fi密码"
                         android:inputType="text" />
                 </LinearLayout>
 

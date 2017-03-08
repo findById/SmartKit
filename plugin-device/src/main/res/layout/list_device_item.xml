@@ -38,7 +38,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
-                        android:text="@{device.id}" />
+                        android:text="@{device.deviceId}" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -58,7 +58,7 @@
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
                         android:layout_gravity="right"
-                        android:text="unknown" />
+                        android:text="@{device.state}" />
 
                 </LinearLayout>
 
@@ -71,7 +71,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
-                    android:text="@{device.desc}" />
+                    android:text="@{device.description}" />
             </LinearLayout>
 
             <android.support.v7.widget.SwitchCompat
@@ -80,7 +80,7 @@
                 android:layout_height="44.3dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="10dp"
-                android:checked="@{device.opened}"
+                android:checked="false"
                 android:visibility="visible" />
         </LinearLayout>
     </LinearLayout>

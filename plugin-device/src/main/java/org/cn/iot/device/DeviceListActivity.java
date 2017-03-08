@@ -77,7 +77,7 @@ public class DeviceListActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), DeviceActivity.class);
-                intent.putExtra(DeviceActivity.ACTION_DEVICE_OPERATE, "Add");
+                intent.putExtra(DeviceActivity.ACTION_DEVICE_OPERATE, DeviceActivity.ACTION_DEVICE_ADD);
                 startActivity(intent);
             }
         });

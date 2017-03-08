@@ -6,13 +6,15 @@ package org.cn.iot.device.model;
 public class Device {
 
     private String id;
+    private String deviceId;
     private String name;
-    private String desc;
-    private boolean isOpened;
-
+    private String label;
     private String type;
-    private String ip;
-    private String status;
+    private String state;
+    private String description;
+    private String lastActiveTime;
+
+    private String relay = "closed";
 
     public String getId() {
         return id;
@@ -20,6 +22,14 @@ public class Device {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public String getName() {
@@ -30,20 +40,12 @@ public class Device {
         this.name = name;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getLabel() {
+        return label;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    public boolean isOpened() {
-        return isOpened;
-    }
-
-    public void setOpened(boolean opened) {
-        isOpened = opened;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public String getType() {
@@ -54,19 +56,35 @@ public class Device {
         this.type = type;
     }
 
-    public String getIp() {
-        return ip;
+    public String getState() {
+        return state;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setState(String state) {
+        this.state = state;
     }
 
-    public String getStatus() {
-        return status;
+    public String getDescription() {
+        return description;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getLastActiveTime() {
+        return lastActiveTime;
+    }
+
+    public void setLastActiveTime(String lastActiveTime) {
+        this.lastActiveTime = lastActiveTime;
+    }
+
+    public String getRelay() {
+        return relay;
+    }
+
+    public void setRelay(String relay) {
+        this.relay = relay;
     }
 }
