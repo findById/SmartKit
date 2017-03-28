@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
-import android.widget.CompoundButton;
+import android.view.View;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -45,16 +45,16 @@ public class SimpleActivity extends AppCompatActivity {
 
     private void initView() {
         mSwitchCompat = (SwitchCompat) findViewById(R.id.btnSwitch);
-        mSwitchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mSwitchCompat.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                MessageService.publish(buttonView.getContext(), "ESP8266", isChecked ? "051" : "050");
+            public void onClick(View v) {
+                MessageService.publish(mSwitchCompat.getContext(), "ESP8266", mSwitchCompat.isChecked() ? "051" : "050");
             }
         });
     }
 
     private void initData() {
-
+        MessageService.publish(this, "ESP8266", "1");
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -67,9 +67,9 @@ public class SimpleActivity extends AppCompatActivity {
                         Message message = (Message) intent.getSerializableExtra(MessageActivity.EXTRA_MESSAGE_DATA);
                         JSONObject obj = JSON.parseObject(message.body);
                         if ("opened".equals(obj.getString("metadata"))) {
-                            mSwitchCompat.setBackgroundResource(R.drawable.ic_power_on);
+                            mSwitchCompat.setChecked(true);
                         } else {
-                            mSwitchCompat.setBackgroundResource(R.drawable.ic_power_off);
+                            mSwitchCompat.setChecked(false);
                         }
                     } catch (Throwable e) {
                         e.printStackTrace();
