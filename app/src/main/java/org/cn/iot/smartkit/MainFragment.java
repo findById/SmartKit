@@ -1,23 +1,35 @@
 package org.cn.iot.smartkit;
 
 import android.Manifest;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CalendarContract;
+import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.cn.iot.device.DeviceListActivity;
+import org.cn.iot.smartkit.simple.SimpleActivity;
 import org.cn.iot.smartkit.utils.PermissionUtils;
 import org.cn.plugin.airkiss.SmartConfigActivity;
 import org.cn.plugin.message.MessageActivity;
 
+import java.util.Calendar;
+import java.util.TimeZone;
+
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends BaseFragment implements View.OnClickListener {
+public class MainFragment extends BaseFragment implements View.OnClickListener {
 
-    public MainActivityFragment() {
+    public MainFragment() {
     }
 
     @Override
@@ -30,7 +42,9 @@ public class MainActivityFragment extends BaseFragment implements View.OnClickLi
     private void initView(View view) {
         view.findViewById(R.id.smart_config).setOnClickListener(this);
         view.findViewById(R.id.message).setOnClickListener(this);
+        view.findViewById(R.id.simple).setOnClickListener(this);
         view.findViewById(R.id.device).setOnClickListener(this);
+        view.findViewById(R.id.calendar).setOnClickListener(this);
     }
 
     @Override
@@ -60,9 +74,16 @@ public class MainActivityFragment extends BaseFragment implements View.OnClickLi
                 startActivity(intent);
                 break;
             }
+            case R.id.simple: {
+                Intent intent = new Intent(getContext(), SimpleActivity.class);
+                startActivity(intent);
+                break;
+            }
+            case R.id.calendar: {
+                break;
+            }
             default:
                 break;
         }
     }
-
 }

@@ -34,7 +34,7 @@ public class MessageReceiver extends BroadcastReceiver {
                     message.producerId = obj.getString("deviceId");
                     message.consumerId = consumerId;
                     message.msgType = msgType;
-                    message.body = obj.getString("body");
+                    message.body = obj.getString("logic");
 
                     showNotification(context, message);
 

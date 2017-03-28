@@ -19,7 +19,7 @@ public class Message implements Serializable {
     @Column(name = "consumer_id")
     public String consumerId;
     @Column(name = "msg_type")
-    public String msgType = "text";
+    public String msgType = "0";
     @Column(name = "body")
     public String body;
     @Column(name = "update_time")

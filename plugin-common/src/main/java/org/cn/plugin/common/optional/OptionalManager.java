@@ -1,4 +1,4 @@
-package org.cn.iot.smartkit.optional;
+package org.cn.plugin.common.optional;
 
 import android.content.Context;
 import android.preference.PreferenceManager;

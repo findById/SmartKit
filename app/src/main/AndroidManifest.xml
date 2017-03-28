@@ -9,6 +9,8 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
@@ -28,6 +30,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".simple.SimpleActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name="org.cn.plugin.airkiss.SmartConfigActivity"
@@ -36,9 +41,8 @@
             android:name="org.cn.plugin.message.MessageActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".optional.OptionalActivity"
+            android:name="org.cn.plugin.common.optional.OptionalActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name="org.cn.iot.device.DeviceListActivity"
             android:theme="@style/AppTheme.NoActionBar" />

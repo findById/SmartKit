@@ -1,4 +1,4 @@
-package org.cn.iot.smartkit.optional;
+package org.cn.plugin.common.optional;
 
 public class OptionalConst {
     public static final String KEY_API_HOST = "api_host";

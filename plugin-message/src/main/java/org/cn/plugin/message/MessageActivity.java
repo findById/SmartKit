@@ -243,9 +243,9 @@ public class MessageActivity extends AppCompatActivity {
         OrmHelper.getInstance().insert(bean);
 
         if ("开灯".equals(message)) {
-            MessageService.publish(this, "ESP8266", "2");
+            MessageService.publish(this, "ESP8266", "051");
         } else if ("关灯".equals(message)) {
-            MessageService.publish(this, "ESP8266", "1");
+            MessageService.publish(this, "ESP8266", "050");
         }
 
 //        JSONObject param = new JSONObject();

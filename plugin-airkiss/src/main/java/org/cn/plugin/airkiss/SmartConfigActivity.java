@@ -111,6 +111,14 @@ public class SmartConfigActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         getSsid();
+
+        try {
+            if (!socket.isConnected()) {
+                initUDPConfig();
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     private void getSsid() {
@@ -298,10 +306,14 @@ public class SmartConfigActivity extends AppCompatActivity {
             if (!data.startsWith("config:")) {
                 continue;
             }
-
-            String deviceId = data.substring(6, data.length());
+            final String deviceId = data.substring(6, packet.getLength());
             if (!deviceList.contains(deviceId)) {
-                // find by database
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "UDP Config starting." + deviceId, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             for (String key : map.keySet()) {

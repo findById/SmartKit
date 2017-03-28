@@ -85,8 +85,9 @@ public class MessagePlugin {
 
         try {
             mqttClient.connect(options);
-            mqttClient.subscribe("subscribe");
-            mqttClient.subscribe("deviceId");
+            // mqttClient.subscribe("subscribe");
+            mqttClient.subscribe("hardware");
+            mqttClient.subscribe("AndroidClient");
         } catch (MqttException e) {
             e.printStackTrace();
         }

@@ -5,8 +5,7 @@ import android.app.Application;
 import android.os.Bundle;
 
 import org.cn.iot.device.DeviceConst;
-import org.cn.iot.smartkit.optional.OptionalConst;
-import org.cn.iot.smartkit.optional.OptionalManager;
+import org.cn.plugin.common.optional.OptionalManager;
 import org.cn.plugin.message.MessageConst;
 import org.cn.plugin.message.service.MessageService;
 import org.cn.plugin.message.utils.OrmHelper;
@@ -29,14 +28,8 @@ public class CoreApplication extends Application {
         OptionalManager.init(getApplicationContext());
         OrmHelper.init(getApplicationContext());
 
-        String API_HOST = OptionalManager.getString(OptionalConst.KEY_API_HOST, "http://192.168.99.111:8080");
-
-        DeviceConst.API_HOST = API_HOST;
-
-        MessageConst.API_HOST = API_HOST;
-        MessageConst.host = OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_ADDR, "");
-        MessageConst.username = OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_USERNAME, "");
-        MessageConst.password = OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_PASSWORD, "");
+        DeviceConst.init();
+        MessageConst.init();
         MessageService.start(getApplicationContext());
 
         init();

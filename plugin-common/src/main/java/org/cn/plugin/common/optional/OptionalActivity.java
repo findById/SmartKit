@@ -1,4 +1,4 @@
-package org.cn.iot.smartkit.optional;
+package org.cn.plugin.common.optional;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -6,12 +6,13 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 
-import org.cn.iot.smartkit.R;
-import org.cn.iot.smartkit.databinding.ActivityOptionalBinding;
-import org.cn.plugin.message.utils.OrmHelper;
+import org.cn.plugin.common.R;
+import org.cn.plugin.common.databinding.ActivityOptionalBinding;
 
 public class OptionalActivity extends AppCompatActivity {
+    public static final String TITLE = "optional.title";
     public static final String ACTION_OPTIONAL = "action.optional";
 
     private ActivityOptionalBinding mBind;
@@ -20,8 +21,13 @@ public class OptionalActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        String title = getIntent().getStringExtra(TITLE);
+        if (TextUtils.isEmpty(title)) {
+            title = "Settings";
+        }
+
         mBind = DataBindingUtil.setContentView(this, R.layout.activity_optional);
-        mBind.setTitle(getString(R.string.action_settings));
+        mBind.setTitle(title);
 
         PreferenceFragment fragment = new PreferFragment();
         Bundle bundle = new Bundle();
@@ -56,20 +62,20 @@ public class OptionalActivity extends AppCompatActivity {
         private void initData() {
             Preference api = findPreference(OptionalConst.KEY_API_HOST);
             api.setOnPreferenceChangeListener(listener);
-            api.setSummary(OptionalManager.getString(OptionalConst.KEY_API_HOST, "http://127.0.0.1:8080"));
+            api.setSummary(OptionalManager.getString(OptionalConst.KEY_API_HOST, ""));
 
             // mqtt server
             Preference mqtt_message_server = findPreference(OptionalConst.KEY_MQTT_SERVER_ADDR);
             mqtt_message_server.setOnPreferenceChangeListener(listener);
-            mqtt_message_server.setSummary(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_ADDR, "tcp://192.168.99.111:61613"));
+            mqtt_message_server.setSummary(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_ADDR, ""));
 
             Preference mqtt_message_username = findPreference(OptionalConst.KEY_MQTT_SERVER_USERNAME);
             mqtt_message_username.setOnPreferenceChangeListener(listener);
-            mqtt_message_username.setSummary(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_USERNAME, "admin"));
+            mqtt_message_username.setSummary(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_USERNAME, ""));
 
             Preference mqtt_message_password = findPreference(OptionalConst.KEY_MQTT_SERVER_PASSWORD);
             mqtt_message_password.setOnPreferenceChangeListener(listener);
-            mqtt_message_password.setSummary(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_PASSWORD, "password"));
+            mqtt_message_password.setSummary(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_PASSWORD, ""));
 
             findPreference(OptionalConst.KEY_CLEAN_MESSAGE_CACHE).setOnPreferenceClickListener(clickListener);
         }
@@ -87,10 +93,6 @@ public class OptionalActivity extends AppCompatActivity {
             public boolean onPreferenceClick(Preference preference) {
                 switch (preference.getKey()) {
                     case OptionalConst.KEY_CLEAN_MESSAGE_CACHE: {
-                        try {
-                            OrmHelper.getInstance().getWritableDatabase().execSQL("DELETE FROM iot_message");
-                        } catch (Throwable e) {
-                        }
                         break;
                     }
                     default:
