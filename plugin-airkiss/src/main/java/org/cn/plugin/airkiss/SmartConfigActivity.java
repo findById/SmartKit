@@ -251,6 +251,7 @@ public class SmartConfigActivity extends AppCompatActivity {
     }
 
     Map<String, String> map = new HashMap<>();
+    Map<String, String> deviceCache = new HashMap<>();
 
     public void initDeviceData() {
         deviceId = mBinding.deviceId.getText().toString();
@@ -273,7 +274,7 @@ public class SmartConfigActivity extends AppCompatActivity {
         while (socket != null && !socket.isClosed()) {
             DatagramPacket packet = new DatagramPacket(new byte[1024], 1024);
             socket.receive(packet);
-            String data = new String(packet.getData());
+            String data = new String(packet.getData(), 0, packet.getLength());
             System.out.println("addr: " + packet.getAddress());
             System.out.println("data: " + data);
             System.out.println("length: " + packet.getLength());
@@ -281,18 +282,21 @@ public class SmartConfigActivity extends AppCompatActivity {
             if (!data.startsWith("config:")) {
                 continue;
             }
-            final String deviceId = data.substring(6, packet.getLength());
+            final String deviceId = data.substring(7, data.length());
             if (!deviceList.contains(deviceId)) {
             }
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(), "UDP Config starting." + deviceId, Toast.LENGTH_SHORT).show();
-                }
-            });
+            if (deviceCache.containsKey(deviceId)) {
+                continue;
+            }
+            deviceCache.put(deviceId, "");
+
             byte[] buffer = encodePacket("begin", "begin");
             socket.send(new DatagramPacket(buffer, buffer.length, packet.getAddress(), packet.getPort()));
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+            }
             for (String key : map.keySet()) {
                 buffer = encodePacket(key, map.get(key));
                 if (buffer == null) {
@@ -307,12 +311,7 @@ public class SmartConfigActivity extends AppCompatActivity {
             }
             buffer = encodePacket("end", "end");
             socket.send(new DatagramPacket(buffer, buffer.length, packet.getAddress(), packet.getPort()));
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(), "Success.", Toast.LENGTH_SHORT).show();
-                }
-            });
+            deviceCache.remove(deviceId);
         }
     }
 
