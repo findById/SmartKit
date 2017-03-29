@@ -308,16 +308,18 @@ public class SmartConfigActivity extends AppCompatActivity {
             }
             final String deviceId = data.substring(6, packet.getLength());
             if (!deviceList.contains(deviceId)) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), "UDP Config starting." + deviceId, Toast.LENGTH_SHORT).show();
-                    }
-                });
             }
 
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(), "UDP Config starting." + deviceId, Toast.LENGTH_SHORT).show();
+                }
+            });
+            byte[] buffer = encodePacket("begin", "begin");
+            socket.send(new DatagramPacket(buffer, buffer.length, packet.getAddress(), packet.getPort()));
             for (String key : map.keySet()) {
-                byte[] buffer = encodePacket(key, map.get(key));
+                buffer = encodePacket(key, map.get(key));
                 if (buffer == null) {
                     continue;
                 }
@@ -328,7 +330,7 @@ public class SmartConfigActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                 }
             }
-            byte[] buffer = encodePacket("end", "end");
+            buffer = encodePacket("end", "end");
             socket.send(new DatagramPacket(buffer, buffer.length, packet.getAddress(), packet.getPort()));
             runOnUiThread(new Runnable() {
                 @Override

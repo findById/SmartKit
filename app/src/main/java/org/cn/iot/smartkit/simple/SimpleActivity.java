@@ -72,6 +72,11 @@ public class SimpleActivity extends AppCompatActivity {
     }
 
     private void initData() {
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         MessageService.publish(this, deviceId, "1");
         mHandler.postDelayed(runnable, 1000 * 5);
     }
