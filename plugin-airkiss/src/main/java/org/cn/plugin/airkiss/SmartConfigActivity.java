@@ -1,10 +1,8 @@
 package org.cn.plugin.airkiss;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,6 +22,8 @@ import com.espressif.iot.esptouch.IEsptouchTask;
 import com.espressif.iot.esptouch.demo_activity.EspWifiAdminSimple;
 
 import org.cn.plugin.airkiss.databinding.ActivityAirkissBinding;
+import org.cn.plugin.common.optional.OptionalConst;
+import org.cn.plugin.common.optional.OptionalManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -40,10 +40,9 @@ public class SmartConfigActivity extends AppCompatActivity {
 
     private EspWifiAdminSimple mWifiAdmin;
 
-    private SharedPreferences sp;
-    private SharedPreferences.Editor spe;
-
     private ActivityAirkissBinding mBinding;
+
+    private String deviceId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,26 +65,14 @@ public class SmartConfigActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        sp = getSharedPreferences("udp_config", Context.MODE_APPEND);
-        spe = sp.edit();
-
         mWifiAdmin = new EspWifiAdminSimple(this);
-
-        mBinding.verificationCode.setText(sp.getString("verification_code", ""));
-        mBinding.mqttServer.setText(sp.getString("mqtt_server", ""));
-        mBinding.mqttUserId.setText(sp.getString("mqtt_user_id", ""));
-        mBinding.mqttUsername.setText(sp.getString("mqtt_username", ""));
-        mBinding.mqttPassword.setText(sp.getString("mqtt_password", ""));
-        mBinding.deviceName.setText(sp.getString("device_name", ""));
-        mBinding.token.setText(sp.getString("token", ""));
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     initUDPConfig();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (Throwable ignored) {
                 }
             }
         }).start();
@@ -111,14 +98,6 @@ public class SmartConfigActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         getSsid();
-
-        try {
-            if (!socket.isConnected()) {
-                initUDPConfig();
-            }
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
     }
 
     private void getSsid() {
@@ -132,16 +111,12 @@ public class SmartConfigActivity extends AppCompatActivity {
     }
 
     private void start() {
-        spe.putString("verification_code", mBinding.verificationCode.getText().toString());
-        spe.putString("mqtt_server", mBinding.mqttServer.getText().toString());
-        spe.putString("mqtt_user_id", mBinding.mqttUserId.getText().toString());
-        spe.putString("mqtt_username", mBinding.mqttUsername.getText().toString());
-        spe.putString("mqtt_password", mBinding.mqttPassword.getText().toString());
-        spe.putString("device_name", mBinding.deviceName.getText().toString());
-        spe.putString("token", mBinding.token.getText().toString());
-        spe.commit();
+        initDeviceData();
 
-        initLastData();
+        if (TextUtils.isEmpty(deviceId)) {
+            Toast.makeText(this, "请输入设备Id", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         String apSsid = mBinding.apSsid.getText().toString();
         if (TextUtils.isEmpty(apSsid)) {
@@ -201,10 +176,10 @@ public class SmartConfigActivity extends AppCompatActivity {
                 }
             });
             mProgressDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Waiting...", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
             mProgressDialog.show();
             mProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
         }
@@ -277,25 +252,25 @@ public class SmartConfigActivity extends AppCompatActivity {
 
     Map<String, String> map = new HashMap<>();
 
-    public void initLastData() {
-        map.put("verification_code", sp.getString("verification_code", ""));
-        map.put("mqtt_server", sp.getString("mqtt_server", ""));
-        map.put("mqtt_user_id", sp.getString("mqtt_user_id", ""));
-        map.put("mqtt_username", sp.getString("mqtt_username", ""));
-        map.put("mqtt_password", sp.getString("mqtt_password", ""));
-        map.put("device_name", sp.getString("device_name", ""));
-        map.put("token", sp.getString("token", ""));
+    public void initDeviceData() {
+        deviceId = mBinding.deviceId.getText().toString();
+        map.put("verification_code", mBinding.verificationCode.getText().toString());
+        map.put("device_name", mBinding.deviceName.getText().toString());
+        map.put("token", mBinding.token.getText().toString());
+        map.put("mqtt_server", OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_ADDR));
+        map.put("mqtt_username", OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_USERNAME));
+        map.put("mqtt_password", OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_PASSWORD));
     }
 
     DatagramSocket socket;
 
     public void initUDPConfig() throws IOException {
-        initLastData();
+        initDeviceData();
 
         List<String> deviceList = new ArrayList<>();
 
         socket = new DatagramSocket(new InetSocketAddress("0.0.0.0", 8266));
-        while (true) {
+        while (socket != null && !socket.isClosed()) {
             DatagramPacket packet = new DatagramPacket(new byte[1024], 1024);
             socket.receive(packet);
             String data = new String(packet.getData());
