@@ -154,7 +154,7 @@ public class MessageActivity extends AppCompatActivity {
     boolean textLayout = false;
 
     private void initInputView() {
-        mBinding.btnSend.setBackgroundColor(Color.parseColor("#dddddd"));
+        mBinding.btnSend.setImageResource(R.drawable.ic_send_grey);
         mBinding.btnSend.setEnabled(false);
         mBinding.text.addTextChangedListener(new TextWatcher() {
             @Override
@@ -164,10 +164,10 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (TextUtils.isEmpty(s)) {
-                    mBinding.btnSend.setBackgroundColor(Color.parseColor("#dddddd"));
+                    mBinding.btnSend.setImageResource(R.drawable.ic_send_grey);
                     mBinding.btnSend.setEnabled(false);
                 } else {
-                    mBinding.btnSend.setBackgroundColor(Color.parseColor("#09bb07"));
+                    mBinding.btnSend.setImageResource(R.drawable.ic_send_green);
                     mBinding.btnSend.setEnabled(true);
                 }
             }
@@ -199,7 +199,7 @@ public class MessageActivity extends AppCompatActivity {
 
     private void changeInputView() {
         if (textLayout) {
-            mBinding.btnKeyboardVoice.setImageResource(R.drawable.ic_voice_normal);
+            mBinding.btnKeyboardVoice.setImageResource(R.drawable.ic_keyboard_voice);
             mBinding.btnSend.setVisibility(View.VISIBLE);
             mBinding.text.setVisibility(View.VISIBLE);
             mBinding.speech.setVisibility(View.GONE);

@@ -62,7 +62,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1">
 
-                        <Button
+                        <ImageButton
                             android:id="@+id/speech"
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
@@ -72,7 +72,8 @@
                             android:layout_weight="1"
                             android:background="@android:color/white"
                             android:gravity="center"
-                            android:text="Speech" />
+                            android:text="Speech"
+                            app:srcCompat="@drawable/ic_keyboard_voice" />
 
                         <EditText
                             android:id="@+id/text"
@@ -82,17 +83,15 @@
 
                     </FrameLayout>
 
-                    <Button
+                    <ImageButton
                         android:id="@+id/btn_send"
                         android:layout_width="130dp"
                         android:layout_height="35dp"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
-                        android:background="#09bb07"
+                        android:background="#00000000"
                         android:gravity="center"
-                        android:text="Send"
-                        android:textColor="@android:color/white"
-                        android:textSize="14sp" />
+                        app:srcCompat="@drawable/ic_send_grey" />
 
                 </LinearLayout>
             </FrameLayout>

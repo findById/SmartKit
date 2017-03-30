@@ -39,39 +39,26 @@
                 android:orientation="vertical"
                 android:padding="5dp">
 
-                <LinearLayout
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:orientation="horizontal">
+                    android:layout_height="wrap_content">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="Wi-Fi名称" />
-
-                    <EditText
+                    <AutoCompleteTextView
                         android:id="@+id/apSsid"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="5dp"
                         android:focusableInTouchMode="false"
                         android:gravity="center_vertical"
-                        android:hint="请选择Wi-Fi SSID"
+                        android:hint="Wi-Fi名称"
                         android:inputType="none"
-                        android:text="@{ssid}" />
-                </LinearLayout>
+                        android:text="@{ssid}" />/>
 
-                <LinearLayout
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="Wi-Fi密码" />
+                    android:layout_height="wrap_content">
 
                     <EditText
                         android:id="@+id/apPassword"
@@ -79,30 +66,30 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="5dp"
                         android:gravity="center_vertical"
-                        android:hint="请输入Wi-Fi密码"
+                        android:hint="Wi-Fi密码"
                         android:inputType="text" />
-                </LinearLayout>
+                </android.support.design.widget.TextInputLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="设备Id" />
-
-                    <EditText
-                        android:id="@+id/device_id"
+                    <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="5dp"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:hint="Device Id"
-                        android:inputType="text" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <EditText
+                            android:id="@+id/device_id"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:hint="设备Id"
+                            android:inputType="text" />
+                    </android.support.design.widget.TextInputLayout>
 
                     <ImageView
                         android:id="@+id/btnScan"
@@ -111,16 +98,9 @@
                         android:background="@drawable/ic_fingerprint" />
                 </LinearLayout>
 
-                <LinearLayout
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="设备名" />
+                    android:layout_height="wrap_content">
 
                     <EditText
                         android:id="@+id/device_name"
@@ -128,20 +108,13 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="5dp"
                         android:gravity="center_vertical"
-                        android:hint="Device Name"
+                        android:hint="设备名"
                         android:inputType="text" />
-                </LinearLayout>
+                </android.support.design.widget.TextInputLayout>
 
-                <LinearLayout
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="设备密钥" />
+                    android:layout_height="wrap_content">
 
                     <EditText
                         android:id="@+id/token"
@@ -149,20 +122,13 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="5dp"
                         android:gravity="center_vertical"
-                        android:hint="Device Token"
+                        android:hint="设备密钥"
                         android:inputType="text" />
-                </LinearLayout>
+                </android.support.design.widget.TextInputLayout>
 
-                <LinearLayout
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="校验码" />
+                    android:layout_height="wrap_content">
 
                     <EditText
                         android:id="@+id/verification_code"
@@ -170,9 +136,51 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="5dp"
                         android:gravity="center_vertical"
-                        android:hint="Verification Code"
+                        android:hint="校验码"
                         android:inputType="text" />
-                </LinearLayout>
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/mqtt_server"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="5dp"
+                        android:gravity="center_vertical"
+                        android:hint="MQTT服务器"
+                        android:inputType="text" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/mqtt_username"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="5dp"
+                        android:gravity="center_vertical"
+                        android:hint="MQTT用户名"
+                        android:inputType="text" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/mqtt_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="5dp"
+                        android:gravity="center_vertical"
+                        android:hint="MQTT密码"
+                        android:inputType="text" />
+                </android.support.design.widget.TextInputLayout>
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
     </android.support.design.widget.CoordinatorLayout>

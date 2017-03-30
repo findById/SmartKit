@@ -67,6 +67,10 @@ public class SmartConfigActivity extends AppCompatActivity {
     private void initData() {
         mWifiAdmin = new EspWifiAdminSimple(this);
 
+        mBinding.mqttServer.setText(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_ADDR));
+        mBinding.mqttUsername.setText(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_USERNAME));
+        mBinding.mqttPassword.setText(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_PASSWORD));
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -256,11 +260,12 @@ public class SmartConfigActivity extends AppCompatActivity {
     public void initDeviceData() {
         deviceId = mBinding.deviceId.getText().toString();
         map.put("verification_code", mBinding.verificationCode.getText().toString());
+        map.put("device_id", deviceId);
         map.put("device_name", mBinding.deviceName.getText().toString());
         map.put("token", mBinding.token.getText().toString());
-        map.put("mqtt_server", OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_ADDR));
-        map.put("mqtt_username", OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_USERNAME));
-        map.put("mqtt_password", OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_PASSWORD));
+        map.put("mqtt_server", mBinding.mqttServer.getText().toString());
+        map.put("mqtt_username", mBinding.mqttUsername.getText().toString());
+        map.put("mqtt_password", mBinding.mqttPassword.getText().toString());
     }
 
     DatagramSocket socket;

@@ -5,6 +5,7 @@
     tools:context="org.cn.plugin.airkiss.SmartConfigActivity">
     <item
         android:id="@+id/action_confirm"
+        android:icon="@drawable/ic_wifi_tethering_white_24dp"
         android:orderInCategory="100"
         android:title="Confirm"
         app:showAsAction="always" />
