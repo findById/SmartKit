@@ -7,6 +7,7 @@ import android.preference.PreferenceFragment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.MenuItem;
 
 import org.cn.plugin.common.R;
 import org.cn.plugin.common.databinding.ActivityOptionalBinding;
@@ -29,11 +30,25 @@ public class OptionalActivity extends AppCompatActivity {
         mBind = DataBindingUtil.setContentView(this, R.layout.activity_optional);
         mBind.setTitle(title);
 
+        setSupportActionBar(mBind.toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         PreferenceFragment fragment = new PreferFragment();
         Bundle bundle = new Bundle();
         bundle.putString(ACTION_OPTIONAL, getIntent().getStringExtra(ACTION_OPTIONAL));
         fragment.setArguments(bundle);
         getFragmentManager().beginTransaction().replace(R.id.optional_container, fragment).commit();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                finish();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public static class PreferFragment extends PreferenceFragment {

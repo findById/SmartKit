@@ -117,6 +117,15 @@ public class MainActivity extends BaseActivity
 
                 break;
             }
+            case R.id.nav_settings: {
+                Intent intent = new Intent(this, OptionalActivity.class);
+                intent.putExtra(OptionalActivity.ACTION_OPTIONAL, "all");
+                startActivity(intent);
+                break;
+            }
+            case R.id.nav_about: {
+                break;
+            }
             case R.id.nav_air_kiss: {
                 PermissionUtils.requestPermissions(this, new PermissionUtils.OnPermissionsCallback() {
                     @Override

@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,6 +22,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.MenuItem;
 import android.view.View;
 
 import org.cn.plugin.message.adapter.MessageAdapter;
@@ -54,6 +54,10 @@ public class MessageActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_message);
+        mBinding.setTitle("Message");
+
+        setSupportActionBar(mBinding.toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         PermissionManager.init(this);
         PermissionManager.requestPermissions(this, new PermissionManager.OnPermissionsCallback() {
@@ -117,6 +121,19 @@ public class MessageActivity extends AppCompatActivity {
         handler.destroy();
         unregisterReceiver(receiver);
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                finish();
+                return true;
+            }
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initView() {
