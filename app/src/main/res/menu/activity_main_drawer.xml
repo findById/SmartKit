@@ -16,6 +16,10 @@
             android:icon="@drawable/ic_menu_storage"
             android:title="设备" />
         <item
+            android:id="@+id/nav_timeline"
+            android:icon="@drawable/ic_menu_timeline"
+            android:title="任务" />
+        <item
             android:id="@+id/nav_air_kiss"
             android:icon="@drawable/ic_menu_air_kiss"
             android:title="AirKiss" />

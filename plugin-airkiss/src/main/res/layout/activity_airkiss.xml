@@ -47,13 +47,12 @@
                         android:id="@+id/apSsid"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginLeft="5dp"
+                        android:drawableRight="@drawable/ic_arrow_down"
                         android:focusableInTouchMode="false"
                         android:gravity="center_vertical"
                         android:hint="Wi-Fi名称"
                         android:inputType="none"
-                        android:text="@{ssid}" />/>
-
+                        android:text="@{ssid}" />
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
@@ -64,10 +63,9 @@
                         android:id="@+id/apPassword"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginLeft="5dp"
                         android:gravity="center_vertical"
                         android:hint="Wi-Fi密码"
-                        android:inputType="text" />
+                        android:inputType="textPassword" />
                 </android.support.design.widget.TextInputLayout>
 
                 <LinearLayout
@@ -84,7 +82,6 @@
                             android:id="@+id/device_id"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_marginLeft="5dp"
                             android:layout_weight="1"
                             android:gravity="center_vertical"
                             android:hint="设备Id"
@@ -106,7 +103,6 @@
                         android:id="@+id/device_name"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginLeft="5dp"
                         android:gravity="center_vertical"
                         android:hint="设备名"
                         android:inputType="text" />
@@ -120,7 +116,6 @@
                         android:id="@+id/token"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginLeft="5dp"
                         android:gravity="center_vertical"
                         android:hint="设备密钥"
                         android:inputType="text" />
@@ -134,7 +129,6 @@
                         android:id="@+id/verification_code"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginLeft="5dp"
                         android:gravity="center_vertical"
                         android:hint="校验码"
                         android:inputType="text" />
@@ -148,7 +142,6 @@
                         android:id="@+id/mqtt_server"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginLeft="5dp"
                         android:gravity="center_vertical"
                         android:hint="MQTT服务器"
                         android:inputType="text" />
@@ -162,7 +155,6 @@
                         android:id="@+id/mqtt_username"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginLeft="5dp"
                         android:gravity="center_vertical"
                         android:hint="MQTT用户名"
                         android:inputType="text" />
@@ -176,7 +168,6 @@
                         android:id="@+id/mqtt_password"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginLeft="5dp"
                         android:gravity="center_vertical"
                         android:hint="MQTT密码"
                         android:inputType="text" />

@@ -155,6 +155,10 @@ public class MainActivity extends BaseActivity
                 startActivity(intent);
                 break;
             }
+            case R.id.nav_timeline: {
+
+                break;
+            }
             default:
                 break;
         }
