@@ -70,7 +70,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
                     <android.support.design.widget.TextInputLayout
@@ -90,8 +90,8 @@
 
                     <ImageView
                         android:id="@+id/btnScan"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:background="@drawable/ic_fingerprint" />
                 </LinearLayout>
 
@@ -170,6 +170,19 @@
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
                         android:hint="MQTT密码"
+                        android:inputType="text" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/ota"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:hint="OTA服务器"
                         android:inputType="text" />
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>

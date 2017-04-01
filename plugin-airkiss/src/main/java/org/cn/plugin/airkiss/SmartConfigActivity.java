@@ -270,6 +270,7 @@ public class SmartConfigActivity extends AppCompatActivity {
         map.put("mqtt_server", mBinding.mqttServer.getText().toString());
         map.put("mqtt_username", mBinding.mqttUsername.getText().toString());
         map.put("mqtt_password", mBinding.mqttPassword.getText().toString());
+        map.put("ota", mBinding.ota.getText().toString());
     }
 
     DatagramSocket socket;
