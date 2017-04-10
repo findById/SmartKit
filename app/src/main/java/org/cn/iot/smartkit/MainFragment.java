@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.cn.iot.smartkit.common.BaseFragment;
+
 public class MainFragment extends BaseFragment {
 
     public MainFragment() {

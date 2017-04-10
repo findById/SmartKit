@@ -41,7 +41,7 @@
             android:name="org.cn.plugin.message.MessageActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="org.cn.plugin.common.optional.OptionalActivity"
+            android:name=".common.OptionalActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="org.cn.iot.device.DeviceListActivity"

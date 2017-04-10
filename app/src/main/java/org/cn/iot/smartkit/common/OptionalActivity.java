@@ -1,18 +1,20 @@
-package org.cn.plugin.common.optional;
+package org.cn.iot.smartkit.common;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
-import org.cn.plugin.common.R;
-import org.cn.plugin.common.databinding.ActivityOptionalBinding;
+import org.cn.iot.smartkit.R;
+import org.cn.iot.smartkit.databinding.ActivityOptionalBinding;
+import org.cn.plugin.common.optional.OptionalConst;
+import org.cn.plugin.common.optional.OptionalManager;
+import org.cn.plugin.message.utils.OrmHelper;
 
-public class OptionalActivity extends AppCompatActivity {
+public class OptionalActivity extends BaseActivity {
     public static final String TITLE = "optional.title";
     public static final String ACTION_OPTIONAL = "action.optional";
 
@@ -24,7 +26,7 @@ public class OptionalActivity extends AppCompatActivity {
 
         String title = getIntent().getStringExtra(TITLE);
         if (TextUtils.isEmpty(title)) {
-            title = "Settings";
+            title = getString(R.string.action_settings);
         }
 
         mBind = DataBindingUtil.setContentView(this, R.layout.activity_optional);
@@ -108,6 +110,10 @@ public class OptionalActivity extends AppCompatActivity {
             public boolean onPreferenceClick(Preference preference) {
                 switch (preference.getKey()) {
                     case OptionalConst.KEY_CLEAN_MESSAGE_CACHE: {
+                        try {
+                            OrmHelper.getInstance().getWritableDatabase().execSQL("DELETE FROM iot_message");
+                        } catch (Throwable e) {
+                        }
                         break;
                     }
                     default:

@@ -41,6 +41,17 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.Vi
     }
 
     @Override
+    public int getItemViewType(int position) {
+        switch (mData.get(position).getType()) {
+            case "relay": {
+                return 0;
+            }
+            default:
+                return -1;
+        }
+    }
+
+    @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ListDeviceItemBinding mBinding = DataBindingUtil.inflate(mInflater, R.layout.list_device_item, parent, false);
         return new ViewHolder(mBinding);

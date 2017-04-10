@@ -126,19 +126,6 @@
                     android:layout_height="wrap_content">
 
                     <EditText
-                        android:id="@+id/verification_code"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:hint="校验码"
-                        android:inputType="text" />
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <EditText
                         android:id="@+id/mqtt_server"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"

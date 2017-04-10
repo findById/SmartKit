@@ -27,16 +27,13 @@ import org.cn.plugin.common.optional.OptionalManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class SmartConfigActivity extends AppCompatActivity {
-    private static final String TAG = "SmartConfigActivity";
 
     private EspWifiAdminSimple mWifiAdmin;
 
@@ -71,16 +68,6 @@ public class SmartConfigActivity extends AppCompatActivity {
         mBinding.mqttServer.setText(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_ADDR));
         mBinding.mqttUsername.setText(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_USERNAME));
         mBinding.mqttPassword.setText(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_PASSWORD));
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    initUDPConfig();
-                } catch (Throwable ignored) {
-                }
-            }
-        }).start();
     }
 
     @Override
@@ -96,7 +83,7 @@ public class SmartConfigActivity extends AppCompatActivity {
             finish();
             return true;
         } else if (id == R.id.action_confirm) {
-            start();
+            startSmartConfig();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -118,7 +105,7 @@ public class SmartConfigActivity extends AppCompatActivity {
         }, 200);
     }
 
-    private void start() {
+    private void startSmartConfig() {
         initDeviceData();
 
         if (TextUtils.isEmpty(deviceId)) {
@@ -137,21 +124,10 @@ public class SmartConfigActivity extends AppCompatActivity {
         new EsptouchAsyncTask3().execute(apSsid, apBssid, apPassword, "1");
     }
 
-    private void onEsptoucResultAddedPerform(final IEsptouchResult result) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                String text = result.getBssid() + " is connected to the wifi";
-                Toast.makeText(SmartConfigActivity.this, text, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
     private IEsptouchListener myListener = new IEsptouchListener() {
-
         @Override
         public void onEsptouchResultAdded(final IEsptouchResult result) {
-            onEsptoucResultAddedPerform(result);
+            startTCPConfig(result.getInetAddress().getHostAddress());
         }
     };
 
@@ -216,31 +192,14 @@ public class SmartConfigActivity extends AppCompatActivity {
             IEsptouchResult firstResult = result.get(0);
             // check whether the task is cancelled and no results received
             if (!firstResult.isCancelled()) {
-                int count = 0;
-                // max results to be displayed, if it is more than maxDisplayCount,
-                // just show the count of redundant ones
-                final int maxDisplayCount = 5;
-                // the task received some results including cancelled while
-                // executing before receiving enough results
                 if (firstResult.isSuc()) {
-                    StringBuilder sb = new StringBuilder();
-                    for (IEsptouchResult resultInList : result) {
-                        sb.append("Esptouch success, bssid = "
-                                + resultInList.getBssid()
-                                + ",InetAddress = "
-                                + resultInList.getInetAddress()
-                                .getHostAddress() + "\n");
-                        count++;
-                        if (count >= maxDisplayCount) {
-                            break;
-                        }
-                    }
-                    if (count < result.size()) {
-                        sb.append("\nthere's " + (result.size() - count) + " more result(s) without showing\n");
-                    }
-                    mProgressDialog.setMessage(sb.toString());
+                    mProgressDialog.setMessage("Success, bssid = "
+                            + firstResult.getBssid()
+                            + ", InetAddress = "
+                            + firstResult.getInetAddress()
+                            .getHostAddress());
                 } else {
-                    mProgressDialog.setMessage("Esptouch fail");
+                    mProgressDialog.setMessage("Failed");
                 }
             }
         }
@@ -248,80 +207,49 @@ public class SmartConfigActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if (socket != null) {
-            try {
-                socket.disconnect();
-                socket.close();
-            } catch (Throwable ignored) {
-            }
-        }
         super.onDestroy();
     }
 
     Map<String, String> map = new HashMap<>();
-    Map<String, String> deviceCache = new HashMap<>();
 
     public void initDeviceData() {
         deviceId = mBinding.deviceId.getText().toString();
-        map.put("verification_code", mBinding.verificationCode.getText().toString());
         map.put("device_id", deviceId);
         map.put("device_name", mBinding.deviceName.getText().toString());
         map.put("token", mBinding.token.getText().toString());
         map.put("mqtt_server", mBinding.mqttServer.getText().toString());
         map.put("mqtt_username", mBinding.mqttUsername.getText().toString());
         map.put("mqtt_password", mBinding.mqttPassword.getText().toString());
-        map.put("ota", mBinding.ota.getText().toString());
+        map.put("ota_server", mBinding.ota.getText().toString());
     }
 
-    DatagramSocket socket;
+    public void startTCPConfig(String host) {
+        try {
+            Socket socket = new Socket(host, 8266);
 
-    public void initUDPConfig() throws IOException {
-        initDeviceData();
-
-        List<String> deviceList = new ArrayList<>();
-
-        socket = new DatagramSocket(new InetSocketAddress("0.0.0.0", 8266));
-        while (socket != null && !socket.isClosed()) {
-            DatagramPacket packet = new DatagramPacket(new byte[1024], 1024);
-            socket.receive(packet);
-            String data = new String(packet.getData(), 0, packet.getLength());
-            System.out.println("addr: " + packet.getAddress());
-            System.out.println("data: " + data);
-            System.out.println("length: " + packet.getLength());
-
-            if (!data.startsWith("config:")) {
-                continue;
-            }
-            final String deviceId = data.substring(7, data.length());
-            if (!deviceList.contains(deviceId)) {
-            }
-
-            if (deviceCache.containsKey(deviceId)) {
-                continue;
-            }
-            deviceCache.put(deviceId, "");
-
-            byte[] buffer = encodePacket("begin", "begin");
-            socket.send(new DatagramPacket(buffer, buffer.length, packet.getAddress(), packet.getPort()));
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-            }
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            byte[] buffer;
             for (String key : map.keySet()) {
                 buffer = encodePacket(key, map.get(key));
                 if (buffer == null) {
                     continue;
                 }
-                socket.send(new DatagramPacket(buffer, buffer.length, packet.getAddress(), packet.getPort()));
-                System.out.println("send: " + key);
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                }
+                baos.write(buffer);
             }
-            buffer = encodePacket("end", "end");
-            socket.send(new DatagramPacket(buffer, buffer.length, packet.getAddress(), packet.getPort()));
-            deviceCache.remove(deviceId);
+            baos.write(0);
+            baos.write(0);
+
+            OutputStream os = socket.getOutputStream();
+//            int len = baos.size();
+//            os.write((len >> 24) & 0xFF);
+//            os.write((len >> 16) & 0xFF);
+//            os.write((len >> 8) & 0xFF);
+//            os.write((len) & 0xFF);
+            os.write(baos.toByteArray());
+            os.flush();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

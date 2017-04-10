@@ -16,10 +16,11 @@ import android.view.MenuItem;
 import android.view.View;
 
 import org.cn.iot.device.DeviceListActivity;
+import org.cn.iot.smartkit.common.BaseActivity;
+import org.cn.iot.smartkit.common.OptionalActivity;
 import org.cn.iot.smartkit.simple.SimpleActivity;
 import org.cn.iot.smartkit.utils.PermissionUtils;
 import org.cn.plugin.airkiss.SmartConfigActivity;
-import org.cn.plugin.common.optional.OptionalActivity;
 import org.cn.plugin.message.MessageActivity;
 
 public class MainActivity extends BaseActivity
