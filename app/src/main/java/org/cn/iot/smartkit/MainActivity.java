@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -39,8 +38,8 @@ public class MainActivity extends BaseActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(MainActivity.this, SimpleActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -124,9 +123,6 @@ public class MainActivity extends BaseActivity
                 startActivity(intent);
                 break;
             }
-            case R.id.nav_about: {
-                break;
-            }
             case R.id.nav_air_kiss: {
                 PermissionUtils.requestPermissions(this, new PermissionUtils.OnPermissionsCallback() {
                     @Override
@@ -148,11 +144,6 @@ public class MainActivity extends BaseActivity
             }
             case R.id.nav_device: {
                 Intent intent = new Intent(this, DeviceListActivity.class);
-                startActivity(intent);
-                break;
-            }
-            case R.id.nav_simple: {
-                Intent intent = new Intent(this, SimpleActivity.class);
                 startActivity(intent);
                 break;
             }

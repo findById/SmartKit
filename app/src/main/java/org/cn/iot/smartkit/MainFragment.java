@@ -20,7 +20,6 @@ public class MainFragment extends BaseFragment {
     }
 
     private void initView(View view) {
-
     }
 
 }

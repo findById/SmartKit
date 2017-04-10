@@ -1,31 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="API服务器">
+
+    <PreferenceCategory android:title="服务器(需重启)">
         <EditTextPreference
             android:key="api_host"
-            android:summary="服务器地址"
-            android:title="服务器地址" />
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="MQTT消息插件服务器(需要重启)">
+            android:summary="API Server"
+            android:title="API服务器" />
         <EditTextPreference
             android:key="mqtt_message_server"
-            android:summary="服务器地址"
-            android:title="服务器地址" />
+            android:summary="MQTT Server"
+            android:title="MQTT服务器" />
         <EditTextPreference
             android:key="mqtt_message_username"
-            android:summary="用户名"
-            android:title="用户名" />
+            android:summary="MQTT username"
+            android:title="MQTT用户名" />
         <EditTextPreference
             android:key="mqtt_message_password"
-            android:summary="密码"
-            android:title="密码" />
+            android:summary="MQTT password"
+            android:title="MQTT密码" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="更多">
         <PreferenceScreen
             android:key="clean_message_cache"
             android:summary="清空消息记录"
-            android:title="清空消息记录" />
+            android:title="清空聊天消息" />
     </PreferenceCategory>
 </PreferenceScreen>

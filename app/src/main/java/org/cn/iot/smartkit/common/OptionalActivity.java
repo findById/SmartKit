@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
+import org.cn.iot.smartkit.BuildConfig;
 import org.cn.iot.smartkit.R;
 import org.cn.iot.smartkit.databinding.ActivityOptionalBinding;
 import org.cn.plugin.common.optional.OptionalConst;
@@ -34,6 +35,8 @@ public class OptionalActivity extends BaseActivity {
 
         setSupportActionBar(mBind.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mBind.toolbar.setSubtitle(getString(R.string.app_name) + " v" + BuildConfig.VERSION_NAME);
 
         PreferenceFragment fragment = new PreferFragment();
         Bundle bundle = new Bundle();
