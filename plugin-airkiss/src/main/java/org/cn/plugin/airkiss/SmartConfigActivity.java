@@ -13,7 +13,6 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.espressif.iot.esptouch.EsptouchTask;
 import com.espressif.iot.esptouch.IEsptouchListener;
@@ -38,8 +37,6 @@ public class SmartConfigActivity extends AppCompatActivity {
     private EspWifiAdminSimple mWifiAdmin;
 
     private ActivityAirkissBinding mBinding;
-
-    private String deviceId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,11 +104,6 @@ public class SmartConfigActivity extends AppCompatActivity {
 
     private void startSmartConfig() {
         initDeviceData();
-
-        if (TextUtils.isEmpty(deviceId)) {
-            Toast.makeText(this, "请输入设备Id", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         String apSsid = mBinding.apSsid.getText().toString();
         if (TextUtils.isEmpty(apSsid)) {
@@ -213,14 +205,10 @@ public class SmartConfigActivity extends AppCompatActivity {
     Map<String, String> map = new HashMap<>();
 
     public void initDeviceData() {
-        deviceId = mBinding.deviceId.getText().toString();
-        map.put("device_id", deviceId);
         map.put("device_name", mBinding.deviceName.getText().toString());
-        map.put("token", mBinding.token.getText().toString());
         map.put("mqtt_server", mBinding.mqttServer.getText().toString());
         map.put("mqtt_username", mBinding.mqttUsername.getText().toString());
         map.put("mqtt_password", mBinding.mqttPassword.getText().toString());
-        map.put("ota_server", mBinding.ota.getText().toString());
     }
 
     public void startTCPConfig(String host) {

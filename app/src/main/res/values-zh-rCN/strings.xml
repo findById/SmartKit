@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">SmartKit</string>
+
+    <string name="action_settings">设置</string>
+    <!-- nav -->
+    <string name="nav_home">首页</string>
+    <string name="nav_message">消息</string>
+    <string name="nav_device">设备</string>
+    <string name="nav_timeline">任务</string>
+    <string name="nav_air_kiss">AirKiss</string>
+    <string name="nav_settings">设置</string>
+</resources>

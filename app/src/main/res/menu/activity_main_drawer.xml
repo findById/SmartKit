@@ -6,26 +6,26 @@
             android:id="@+id/nav_home"
             android:checked="true"
             android:icon="@drawable/ic_menu_home"
-            android:title="首页" />
+            android:title="@string/nav_home" />
         <item
             android:id="@+id/nav_message"
             android:icon="@drawable/ic_menu_message"
-            android:title="消息" />
+            android:title="@string/nav_message" />
         <item
             android:id="@+id/nav_device"
             android:icon="@drawable/ic_menu_storage"
-            android:title="设备" />
+            android:title="@string/nav_device" />
         <item
             android:id="@+id/nav_timeline"
             android:icon="@drawable/ic_menu_timeline"
-            android:title="任务" />
+            android:title="@string/nav_timeline" />
         <item
             android:id="@+id/nav_air_kiss"
             android:icon="@drawable/ic_menu_air_kiss"
-            android:title="AirKiss" />
+            android:title="@string/nav_air_kiss" />
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_menu_settings"
-            android:title="设置" />
+            android:title="@string/nav_settings" />
     </group>
 </menu>
