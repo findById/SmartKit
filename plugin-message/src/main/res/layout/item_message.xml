@@ -48,7 +48,7 @@
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="50dp"
                     android:layout_weight="1"
-                    android:background="@drawable/ic_message_bg"
+                    android:background="@drawable/bg_item_message_left"
                     android:orientation="vertical"
                     android:padding="5dp">
 
@@ -59,8 +59,8 @@
                         android:layout_weight="1"
                         android:gravity="center_vertical"
                         android:minHeight="30dp"
-                        android:paddingLeft="2dp"
-                        android:paddingRight="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
                         android:text="@{message.body}" />
                 </LinearLayout>
             </LinearLayout>
@@ -79,7 +79,7 @@
                     android:layout_marginLeft="50dp"
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
-                    android:background="@drawable/ic_message_bg"
+                    android:background="@drawable/bg_item_message_right"
                     android:orientation="vertical"
                     android:padding="5dp">
 
@@ -90,19 +90,11 @@
                         android:layout_weight="1"
                         android:gravity="center_vertical"
                         android:minHeight="30dp"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="2dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
                         android:text="@{message.body}" />
                 </LinearLayout>
 
-                <org.cn.plugin.message.widget.RoundAngleImageView
-                    android:id="@+id/right_icon"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_launcher"
-                    app:roundHeight="15dp"
-                    app:roundWidth="15dp" />
             </LinearLayout>
 
             <TextView

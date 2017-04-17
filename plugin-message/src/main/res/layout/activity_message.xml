@@ -40,49 +40,36 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"></android.support.v7.widget.RecyclerView>
 
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/layout_voice"
+                    android:id="@+id/text_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="50dp"
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:id="@+id/btn_keyboard_voice"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:id="@+id/btn_attachment"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:layout_gravity="center_vertical"
                         android:padding="5dp"
                         android:src="@drawable/ic_launcher" />
 
-                    <FrameLayout
+                    <EditText
+                        android:id="@+id/text"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1">
-
-                        <ImageButton
-                            android:id="@+id/speech"
-                            android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:layout_weight="1"
-                            android:background="@android:color/white"
-                            android:gravity="center"
-                            android:text="Speech"
-                            app:srcCompat="@drawable/ic_keyboard_voice" />
-
-                        <EditText
-                            android:id="@+id/text"
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:textSize="14sp" />
-
-                    </FrameLayout>
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:hint="Type a message"
+                        android:minHeight="50dp"
+                        android:textSize="14sp" />
 
                     <ImageButton
                         android:id="@+id/btn_send"
@@ -95,7 +82,22 @@
                         app:srcCompat="@drawable/ic_send_grey" />
 
                 </LinearLayout>
-            </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/attachment_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/speech"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/ic_keyboard_voice"
+                        android:text="Speech" />
+
+                </FrameLayout>
+            </LinearLayout>
 
         </LinearLayout>
 

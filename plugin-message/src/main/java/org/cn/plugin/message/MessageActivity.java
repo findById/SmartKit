@@ -58,6 +58,7 @@ public class MessageActivity extends AppCompatActivity {
 
         setSupportActionBar(mBinding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setSubtitle(String.format("@%s", userId));
 
         PermissionManager.init(this);
         PermissionManager.requestPermissions(this, new PermissionManager.OnPermissionsCallback() {
@@ -168,7 +169,7 @@ public class MessageActivity extends AppCompatActivity {
         }
     }
 
-    boolean textLayout = false;
+    boolean showAttachmentLayout = false;
 
     private void initInputView() {
         mBinding.btnSend.setImageResource(R.drawable.ic_send_grey);
@@ -205,33 +206,35 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-        changeInputView();
-        mBinding.btnKeyboardVoice.setOnClickListener(new View.OnClickListener() {
+        changeInputLayout(false);
+        mBinding.btnAttachment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeInputView();
+                changeInputLayout(true);
             }
         });
     }
 
-    private void changeInputView() {
-        if (textLayout) {
-            mBinding.btnKeyboardVoice.setImageResource(R.drawable.ic_keyboard_voice);
-            mBinding.btnSend.setVisibility(View.VISIBLE);
-            mBinding.text.setVisibility(View.VISIBLE);
-            mBinding.speech.setVisibility(View.GONE);
+    private void changeInputLayout(boolean showSoftInput) {
+        if (showAttachmentLayout) {
+            mBinding.btnAttachment.setImageResource(R.drawable.ic_keyboard);
+            mBinding.attachmentLayout.setVisibility(View.VISIBLE);
+            mBinding.text.setEnabled(false);
+            mBinding.btnSend.setEnabled(false);
 
-            mBinding.text.requestFocus();
-            KeyboardUtil.show(mBinding.text);
+            KeyboardUtil.hide(mBinding.text);
         } else {
-            mBinding.btnKeyboardVoice.setImageResource(R.drawable.ic_keyboard_normal);
-            mBinding.btnSend.setVisibility(View.INVISIBLE);
-            mBinding.text.setVisibility(View.GONE);
-            mBinding.speech.setVisibility(View.VISIBLE);
+            mBinding.btnAttachment.setImageResource(R.drawable.ic_attachment);
+            mBinding.attachmentLayout.setVisibility(View.GONE);
+            mBinding.text.setEnabled(true);
+            mBinding.btnSend.setEnabled(true);
 
-            KeyboardUtil.hide(mBinding.speech);
+            if (showSoftInput) {
+                mBinding.text.requestFocus();
+                KeyboardUtil.show(mBinding.text);
+            }
         }
-        textLayout = !textLayout;
+        showAttachmentLayout = !showAttachmentLayout;
     }
 
     private void sendMessage(String message) {
