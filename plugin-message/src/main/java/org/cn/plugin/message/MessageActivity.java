@@ -23,10 +23,15 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+
+import com.alibaba.fastjson.JSON;
 
 import org.cn.plugin.message.adapter.MessageAdapter;
 import org.cn.plugin.message.databinding.ActivityMessageBinding;
+import org.cn.plugin.message.model.Logic;
+import org.cn.plugin.message.model.LogicType;
 import org.cn.plugin.message.model.Message;
 import org.cn.plugin.message.model.MessageType;
 import org.cn.plugin.message.service.MessageService;
@@ -41,6 +46,7 @@ import java.util.List;
 public class MessageActivity extends AppCompatActivity {
     public static final String ACTION_MESSAGE = "action.iot.message.refresh.smartkit";
     public static final String EXTRA_MESSAGE_DATA = "extra.message.data";
+    public static final String EXTRA_CONSUMER_DATA = "extra.consumer.data";
 
     private ActivityMessageBinding mBinding;
 
@@ -49,6 +55,7 @@ public class MessageActivity extends AppCompatActivity {
     private VoiceHandler handler;
 
     public static String userId = "me";
+    public String consumer;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,7 +65,6 @@ public class MessageActivity extends AppCompatActivity {
 
         setSupportActionBar(mBinding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setSubtitle(String.format("@%s", userId));
 
         PermissionManager.init(this);
         PermissionManager.requestPermissions(this, new PermissionManager.OnPermissionsCallback() {
@@ -158,6 +164,11 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void initData() {
+        consumer = getIntent().getStringExtra(EXTRA_CONSUMER_DATA);
+        if (TextUtils.isEmpty(consumer)) {
+            consumer = "ESP8266";
+        }
+        getSupportActionBar().setSubtitle(String.format("@%s", consumer));
 
         mMessageAdapter = new MessageAdapter(this, mBinding.recyclerView);
 
@@ -194,6 +205,17 @@ public class MessageActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
             }
         });
+        mBinding.text.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (!showAttachmentLayout) {
+                        changeInputLayout(true);
+                    }
+                }
+                return false;
+            }
+        });
 
         mBinding.btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -219,15 +241,11 @@ public class MessageActivity extends AppCompatActivity {
         if (showAttachmentLayout) {
             mBinding.btnAttachment.setImageResource(R.drawable.ic_keyboard);
             mBinding.attachmentLayout.setVisibility(View.VISIBLE);
-            mBinding.text.setEnabled(false);
-            mBinding.btnSend.setEnabled(false);
 
             KeyboardUtil.hide(mBinding.text);
         } else {
             mBinding.btnAttachment.setImageResource(R.drawable.ic_attachment);
             mBinding.attachmentLayout.setVisibility(View.GONE);
-            mBinding.text.setEnabled(true);
-            mBinding.btnSend.setEnabled(true);
 
             if (showSoftInput) {
                 mBinding.text.requestFocus();
@@ -262,10 +280,10 @@ public class MessageActivity extends AppCompatActivity {
 
         OrmHelper.getInstance().insert(bean);
 
-        if ("开灯".equals(message)) {
-            MessageService.publish(this, "ESP8266", "051");
-        } else if ("关灯".equals(message)) {
-            MessageService.publish(this, "ESP8266", "050");
+        if ("开灯".equals(message) || "open".equals(message)) {
+            MessageService.publish(this, consumer, "051");
+        } else if ("关灯".equals(message) || "close".equals(message)) {
+            MessageService.publish(this, consumer, "050");
         }
 
 //        JSONObject param = new JSONObject();
@@ -301,9 +319,37 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void handleMessage(Message message) {
+        switch (message.msgType) {
+            case MessageType.REPORT: {
+                List<Logic> logicList = JSON.parseArray(message.body, Logic.class);
+                if (logicList != null && !logicList.isEmpty()) {
+                    for (Logic logic : logicList) {
+                        if (LogicType.RELAY.value.equals(logic.type)) {
+                            message.msgType = MessageType.NOTIFY;
+                            message.body = logic.metadata;
+                        }
+                    }
+                }
+                return;
+            }
+            case MessageType.NOTIFY: {
+                List<Logic> logicList = JSON.parseArray(message.body, Logic.class);
+                if (logicList != null && !logicList.isEmpty()) {
+                    for (Logic logic : logicList) {
+                        if (LogicType.RELAY.value.equals(logic.type)) {
+                            message.msgType = MessageType.TEXT;
+                            message.body = logic.metadata;
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+            default:
+                break;
+        }
         mMessageAdapter.add(message);
         OrmHelper.getInstance().insert(message);
-
     }
 
     private void playMessage(String text) {

@@ -11,9 +11,9 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 public class MessagePlugin {
 
-    private static String host = MessageConst.host;
-    private static String username = MessageConst.username;
-    private static String password = MessageConst.password;
+    private String host = MessageConst.host;
+    private String username = MessageConst.username;
+    private String password = MessageConst.password;
     private MqttClient mqttClient;
     private MqttTopic mqttTopic;
     private MqttConnectOptions options;

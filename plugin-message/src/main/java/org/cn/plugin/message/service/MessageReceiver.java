@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.cn.plugin.message.MessageActivity;
 import org.cn.plugin.message.R;
 import org.cn.plugin.message.model.Message;
+import org.cn.plugin.message.model.MessageType;
 
 public class MessageReceiver extends BroadcastReceiver {
 
@@ -36,7 +37,9 @@ public class MessageReceiver extends BroadcastReceiver {
                     message.msgType = msgType;
                     message.body = obj.getString("logic");
 
-                    showNotification(context, message);
+                    if (hasNotify(msgType)) {
+                        showNotification(context, message);
+                    }
 
                     Intent msg = new Intent(MessageActivity.ACTION_MESSAGE);
                     msg.putExtra(MessageActivity.EXTRA_MESSAGE_DATA, message);
@@ -49,6 +52,13 @@ public class MessageReceiver extends BroadcastReceiver {
             default:
                 break;
         }
+    }
+
+    private boolean hasNotify(String type) {
+        if (MessageType.REPORT.equals(type)) {
+            return false;
+        }
+        return true;
     }
 
     public void showNotification(Context ctx, Message message) {
