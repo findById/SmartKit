@@ -27,8 +27,8 @@ public class TextToAudio {
     public static void getToken(final ResponseListener listener) {
         StringBuffer param = new StringBuffer();
         param.append("grant_type=client_credentials");
-        param.append("&client_id=BAIDU_CLIENT_ID");
-        param.append("&client_secret=BAIDU_CLIENT_SECRET");
+        param.append("&client_id=" + BAIDU_CLIENT_ID);
+        param.append("&client_secret=" + BAIDU_CLIENT_SECRET);
 
         RpcEngine.post(BAIDU_TOKEN_API, param.toString(), new ResponseListener<Response>() {
             @Override
