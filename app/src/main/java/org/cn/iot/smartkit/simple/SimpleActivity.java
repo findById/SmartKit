@@ -13,13 +13,18 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.text.TextUtils;
+import android.util.AndroidRuntimeException;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.baidu.speech.EventListener;
+import com.baidu.speech.EventManager;
+import com.baidu.speech.EventManagerFactory;
 
 import org.cn.iot.smartkit.R;
 import org.cn.plugin.message.MessageActivity;
@@ -30,6 +35,7 @@ import org.cn.plugin.rpc.utils.IOUtil;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 
 /**
  * Created by chenning on 17-3-28.
@@ -46,6 +52,8 @@ public class SimpleActivity extends AppCompatActivity {
 
     private Handler mHandler = new Handler();
 
+    private EventManager mEventManager;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,10 +68,42 @@ public class SimpleActivity extends AppCompatActivity {
 
         initView();
         initData();
+        startSpeechEvent();
+    }
+
+    private void startSpeechEvent() {
+        // 1. 创建唤醒事件管理器
+        mEventManager = EventManagerFactory.create(this, "wp");
+        // 2. 注册唤醒事件监听器
+        mEventManager.registerListener(new EventListener() {
+            @Override
+            public void onEvent(String name, String params, byte[] data, int offset, int length) {
+                try {
+                    JSONObject json = JSON.parseObject(params);
+                    if ("wp.data".equals(name)) { // 每次唤醒成功, 将会回调name=wp.data的时间, 被激活的唤醒词在params的word字段
+                        String word = json.getString("word"); // 唤醒词
+                    } else if ("wp.exit".equals(name)) {
+                        // 唤醒已经停止
+                    }
+                } catch (JSONException e) {
+                    throw new AndroidRuntimeException(e);
+                }
+            }
+        });
+        // 3. 通知唤醒管理器, 启动唤醒功能
+        HashMap params = new HashMap();
+        params.put("kws-file", "assets:///WakeUp.bin"); // 设置唤醒资源, 唤醒资源请到 http://yuyin.baidu.com/wake#m4 来评估和导出
+        mEventManager.send("wp.start", new JSONObject(params).toString(), null, 0, 0);
+    }
+
+    private void stopSpeechEvent() {
+        // 停止唤醒监听
+        mEventManager.send("wp.stop", null, null, 0, 0);
     }
 
     @Override
     protected void onDestroy() {
+        stopSpeechEvent();
         unregisterReceiver(receiver);
         super.onDestroy();
     }
