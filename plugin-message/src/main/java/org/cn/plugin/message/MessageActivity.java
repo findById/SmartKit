@@ -180,6 +180,15 @@ public class MessageActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (!showAttachmentLayout) {
+            changeInputLayout(false);
+            return;
+        }
+        super.onBackPressed();
+    }
+
     boolean showAttachmentLayout = false;
 
     private void initInputView() {
