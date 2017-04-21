@@ -186,6 +186,10 @@ public class SmartConfigActivity extends AppCompatActivity {
 
     public void startTCPConfig(String host) {
         try {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+            }
             Socket socket = new Socket(host, 8266);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
