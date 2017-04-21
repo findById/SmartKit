@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
@@ -13,14 +12,10 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-import com.espressif.iot.esptouch.EsptouchTask;
-import com.espressif.iot.esptouch.IEsptouchListener;
-import com.espressif.iot.esptouch.IEsptouchResult;
-import com.espressif.iot.esptouch.IEsptouchTask;
-import com.espressif.iot.esptouch.demo_activity.EspWifiAdminSimple;
+import android.widget.Toast;
 
 import org.cn.plugin.airkiss.databinding.ActivityAirkissBinding;
+import org.cn.plugin.airkiss.utils.EspWifiUtil;
 import org.cn.plugin.common.optional.OptionalConst;
 import org.cn.plugin.common.optional.OptionalManager;
 
@@ -29,14 +24,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SmartConfigActivity extends AppCompatActivity {
 
-    private EspWifiAdminSimple mWifiAdmin;
-
     private ActivityAirkissBinding mBinding;
+
+    private AirKiss mAirKiss;
+
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,7 +56,61 @@ public class SmartConfigActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        mWifiAdmin = new EspWifiAdminSimple(this);
+        mAirKiss = AirKissFactory.create(this, "esptouch");
+        mAirKiss.registerListener(new AirKissListener() {
+            @Override
+            public void onHandled(int type, String message, AirKissResult result) {
+                switch (type) {
+                    case AirKissConst.CODE_ERROR: {
+                        Toast.makeText(SmartConfigActivity.this, String.valueOf(message), Toast.LENGTH_SHORT).show();
+                        break;
+                    }
+                    case AirKissConst.CODE_PROGRESS: {
+                        mProgressDialog = new ProgressDialog(SmartConfigActivity.this);
+                        mProgressDialog.setMessage("Esptouch is configuring, please wait for a moment...");
+                        mProgressDialog.setCanceledOnTouchOutside(false);
+                        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                mAirKiss.cancel();
+                            }
+                        });
+                        mProgressDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Waiting...", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                        mProgressDialog.show();
+                        mProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+                        break;
+                    }
+                    case AirKissConst.CODE_SUCCESS: {
+                        mProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
+                        mProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setText("Confirm");
+                        mProgressDialog.setMessage("Success, bssid = " + result.bssid + ", InetAddress = " + result.address);
+                        break;
+                    }
+                    case AirKissConst.CODE_FAILED: {
+                        mProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
+                        mProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setText("Confirm");
+                        mProgressDialog.setMessage("Failed");
+                        break;
+                    }
+                    case AirKissConst.CODE_CANCELLED: {
+                        break;
+                    }
+                    case AirKissConst.CODE_WORKER_THREAD_SUCCESS: {
+                        map.remove(AirKissConst.KEYS_AP_SSID);
+                        map.remove(AirKissConst.KEYS_AP_BSSID);
+                        map.remove(AirKissConst.KEYS_AP_PASSWORD);
+                        startTCPConfig(result.address);
+                        break;
+                    }
+                    default:
+                        break;
+                }
+            }
+        });
 
         mBinding.mqttServer.setText(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_ADDR));
         mBinding.mqttUsername.setText(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_USERNAME));
@@ -96,7 +146,7 @@ public class SmartConfigActivity extends AppCompatActivity {
         mBinding.apSsid.postDelayed(new Runnable() {
             @Override
             public void run() {
-                String apSsid = mWifiAdmin.getWifiConnectedSsid();
+                String apSsid = EspWifiUtil.getSSID(SmartConfigActivity.this);
                 mBinding.apSsid.setText(TextUtils.isEmpty(apSsid) ? "" : apSsid);
             }
         }, 200);
@@ -111,90 +161,13 @@ public class SmartConfigActivity extends AppCompatActivity {
             return;
         }
         String apPassword = mBinding.apPassword.getText().toString();
-        String apBssid = mWifiAdmin.getWifiConnectedBssid();
+        String apBssid = EspWifiUtil.getBSSID(SmartConfigActivity.this);
 
-        new EsptouchAsyncTask3().execute(apSsid, apBssid, apPassword, "1");
-    }
+        map.put(AirKissConst.KEYS_AP_SSID, apSsid);
+        map.put(AirKissConst.KEYS_AP_BSSID, apBssid);
+        map.put(AirKissConst.KEYS_AP_PASSWORD, apPassword);
 
-    private IEsptouchListener myListener = new IEsptouchListener() {
-        @Override
-        public void onEsptouchResultAdded(final IEsptouchResult result) {
-            startTCPConfig(result.getInetAddress().getHostAddress());
-        }
-    };
-
-    private class EsptouchAsyncTask3 extends AsyncTask<String, Void, List<IEsptouchResult>> {
-
-        private ProgressDialog mProgressDialog;
-
-        private IEsptouchTask mEsptouchTask;
-        // without the lock, if the user tap confirm and cancel quickly enough,
-        // the bug will arise. the reason is follows:
-        // 0. task is starting created, but not finished
-        // 1. the task is cancel for the task hasn't been created, it do nothing
-        // 2. task is created
-        // 3. Oops, the task should be cancelled, but it is running
-        private final Object mLock = new Object();
-
-        @Override
-        protected void onPreExecute() {
-            mProgressDialog = new ProgressDialog(SmartConfigActivity.this);
-            mProgressDialog.setMessage("Esptouch is configuring, please wait for a moment...");
-            mProgressDialog.setCanceledOnTouchOutside(false);
-            mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    synchronized (mLock) {
-                        if (mEsptouchTask != null) {
-                            mEsptouchTask.interrupt();
-                        }
-                    }
-                }
-            });
-            mProgressDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Waiting...", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            });
-            mProgressDialog.show();
-            mProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
-        }
-
-        @Override
-        protected List<IEsptouchResult> doInBackground(String... params) {
-            int taskResultCount = -1;
-            synchronized (mLock) {
-                // !!!NOTICE
-                String apSsid = mWifiAdmin.getWifiConnectedSsidAscii(params[0]);
-                String apBssid = params[1];
-                String apPassword = params[2];
-                String taskResultCountStr = params[3];
-                taskResultCount = Integer.parseInt(taskResultCountStr);
-                mEsptouchTask = new EsptouchTask(apSsid, apBssid, apPassword, SmartConfigActivity.this);
-                mEsptouchTask.setEsptouchListener(myListener);
-            }
-            List<IEsptouchResult> resultList = mEsptouchTask.executeForResults(taskResultCount);
-            return resultList;
-        }
-
-        @Override
-        protected void onPostExecute(List<IEsptouchResult> result) {
-            mProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
-            mProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setText("Confirm");
-            IEsptouchResult firstResult = result.get(0);
-            // check whether the task is cancelled and no results received
-            if (!firstResult.isCancelled()) {
-                if (firstResult.isSuc()) {
-                    mProgressDialog.setMessage("Success, bssid = "
-                            + firstResult.getBssid()
-                            + ", InetAddress = "
-                            + firstResult.getInetAddress()
-                            .getHostAddress());
-                } else {
-                    mProgressDialog.setMessage("Failed");
-                }
-            }
-        }
+        mAirKiss.execute(map);
     }
 
     @Override
@@ -205,10 +178,10 @@ public class SmartConfigActivity extends AppCompatActivity {
     Map<String, String> map = new HashMap<>();
 
     public void initDeviceData() {
-        map.put("device_name", mBinding.deviceName.getText().toString());
-        map.put("mqtt_server", mBinding.mqttServer.getText().toString());
-        map.put("mqtt_username", mBinding.mqttUsername.getText().toString());
-        map.put("mqtt_password", mBinding.mqttPassword.getText().toString());
+        map.put(AirKissConst.KEYS_DEVICE_NAME, mBinding.deviceName.getText().toString());
+        map.put(AirKissConst.KEYS_MQTT_SERVER, mBinding.mqttServer.getText().toString());
+        map.put(AirKissConst.KEYS_MQTT_USERNAME, mBinding.mqttUsername.getText().toString());
+        map.put(AirKissConst.KEYS_MQTT_PASSWORD, mBinding.mqttPassword.getText().toString());
     }
 
     public void startTCPConfig(String host) {
