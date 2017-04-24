@@ -14,11 +14,13 @@
         <item
             android:id="@+id/nav_device"
             android:icon="@drawable/ic_menu_storage"
-            android:title="@string/nav_device" />
+            android:title="@string/nav_device"
+            android:visible="false" />
         <item
             android:id="@+id/nav_timeline"
             android:icon="@drawable/ic_menu_timeline"
-            android:title="@string/nav_timeline" />
+            android:title="@string/nav_timeline"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_air_kiss"
             android:icon="@drawable/ic_menu_air_kiss"

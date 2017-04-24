@@ -11,8 +11,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -25,6 +23,7 @@ import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 
@@ -38,12 +37,13 @@ import org.cn.plugin.message.service.MessageService;
 import org.cn.plugin.message.utils.KeyboardUtil;
 import org.cn.plugin.message.utils.OrmHelper;
 import org.cn.plugin.message.utils.PermissionManager;
+import org.cn.plugin.voice.EventHandler;
 import org.cn.plugin.voice.TextToAudio;
 import org.cn.plugin.voice.VoiceHandler;
 
 import java.util.List;
 
-public class MessageActivity extends AppCompatActivity {
+public class MessageActivity extends AppCompatActivity implements VoiceHandler.OnRecognitionListener, EventHandler.OnEventSpeechListener {
     public static final String ACTION_MESSAGE = "action.iot.message.refresh.smartkit";
     public static final String EXTRA_MESSAGE_DATA = "extra.message.data";
     public static final String EXTRA_CONSUMER_DATA = "extra.consumer.data";
@@ -52,10 +52,13 @@ public class MessageActivity extends AppCompatActivity {
 
     private MessageAdapter mMessageAdapter;
 
-    private VoiceHandler handler;
+    private VoiceHandler voiceHandler;
+    private EventHandler eventHandler;
 
     public static String userId = "me";
     public String consumer;
+
+    private boolean restartVoice = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -99,7 +102,13 @@ public class MessageActivity extends AppCompatActivity {
             }
         }, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
 
-        handler = new VoiceHandler(this);
+        voiceHandler = new VoiceHandler(this);
+        voiceHandler.setListener(this);
+
+        eventHandler = new EventHandler(this);
+        eventHandler.initSpeechEvent();
+        eventHandler.setListener(this);
+        eventHandler.startSpeechEvent();
 
         initView();
         initData();
@@ -125,7 +134,7 @@ public class MessageActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        handler.destroy();
+        voiceHandler.destroy();
         unregisterReceiver(receiver);
         super.onDestroy();
     }
@@ -149,14 +158,8 @@ public class MessageActivity extends AppCompatActivity {
         mBinding.speech.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                handler.start();
-            }
-        });
-
-        handler.setListener(new VoiceHandler.OnRecognitionListener() {
-            @Override
-            public void handleMessage(int statusCode, String message) {
-                sendMessage(message);
+                eventHandler.stopSpeechEvent();
+                voiceHandler.start();
             }
         });
 
@@ -303,6 +306,10 @@ public class MessageActivity extends AppCompatActivity {
 //            @Override
 //            public void onResponse(final Response response) {
 //                try {
+//                    if (!response.isSuccess()) {
+//                        handleMessage(new Message("sys", "", MessageType.NOTIFY, response.message));
+//                        return;
+//                    }
 //                    JSONObject obj = JSON.parseObject(response.result);
 //                    int statusCode = obj.getInteger("statusCode");
 //                    if (statusCode != 200) {
@@ -324,7 +331,6 @@ public class MessageActivity extends AppCompatActivity {
 //                }
 //            }
 //        });
-
     }
 
     private void handleMessage(Message message) {
@@ -376,7 +382,6 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
-    private Handler mHandler = new Handler(Looper.getMainLooper());
     MediaPlayer mp = new MediaPlayer();
     String lastAudio;
 
@@ -391,6 +396,10 @@ public class MessageActivity extends AppCompatActivity {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
+                    if (restartVoice) {
+                        restartVoice = false;
+                        voiceHandler.start();
+                    }
                 }
             });
         } catch (Throwable e) {
@@ -407,4 +416,57 @@ public class MessageActivity extends AppCompatActivity {
             }
         }
     };
+
+    @Override
+    public void onEventSpeech(int statusCode, String data) {
+        switch (statusCode) {
+            case EventHandler.CODE_START: {
+                Toast.makeText(MessageActivity.this, "语音唤醒已开启", Toast.LENGTH_SHORT).show();
+                break;
+            }
+            case EventHandler.CODE_STOP: {
+                Toast.makeText(MessageActivity.this, "语音唤醒已关闭", Toast.LENGTH_SHORT).show();
+                break;
+            }
+            case EventHandler.CODE_DATA: {
+                if ("开始工作".equals(data)) {
+                    eventHandler.stopSpeechEvent();
+                    voiceHandler.start();
+                } else if ("停止工作".equals(data)) {
+                    voiceHandler.stop();
+                    eventHandler.startSpeechEvent();
+                    break;
+                }
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onSpeechMessage(int statusCode, String message) {
+        switch (statusCode) {
+            case VoiceHandler.CODE_DATA: {
+                if ("停止工作".equals(message)) {
+                    voiceHandler.stop();
+                    eventHandler.startSpeechEvent();
+                    break;
+                }
+
+                sendMessage(message);
+                break;
+            }
+            case VoiceHandler.CODE_ERROR: {
+                playMessage(message);
+                break;
+            }
+            case VoiceHandler.CODE_ERROR_RETRY: {
+                voiceHandler.start();
+                break;
+            }
+            default:
+                break;
+        }
+    }
 }

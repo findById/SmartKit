@@ -20,6 +20,10 @@ import java.util.Arrays;
 public class VoiceHandler implements RecognitionListener {
     private static final String TAG = "Speech";
 
+    public static final int CODE_ERROR = 0;
+    public static final int CODE_ERROR_RETRY = 1;
+    public static final int CODE_DATA = 2;
+
     private static final int EVENT_ERROR = 11;
 
     public static final int STATUS_None = 0;
@@ -115,8 +119,12 @@ public class VoiceHandler implements RecognitionListener {
         Log.d(TAG, "识别失败：" + sb.toString());
 
         mProgressDialog.setMessage(sb.toString());
-        if (retry) {
-            start();
+        if (listener != null) {
+            if (retry) {
+                listener.onSpeechMessage(VoiceHandler.CODE_ERROR_RETRY, sb.toString());
+            } else {
+                listener.onSpeechMessage(VoiceHandler.CODE_ERROR, sb.toString());
+            }
         }
     }
 
@@ -172,7 +180,7 @@ public class VoiceHandler implements RecognitionListener {
                 cancel();
                 break;
             case STATUS_Speaking:
-                stop();
+                stopListening();
                 break;
             case STATUS_Recognition:
                 cancel();
@@ -203,7 +211,7 @@ public class VoiceHandler implements RecognitionListener {
                         cancel();
                         break;
                     case STATUS_Speaking:
-                        stop();
+                        stopListening();
                         break;
                     case STATUS_Recognition:
                         cancel();
@@ -221,6 +229,26 @@ public class VoiceHandler implements RecognitionListener {
     }
 
     public void stop() {
+        mProgressDialog.dismiss();
+        switch (status) {
+            case STATUS_None:
+                return;
+            case STATUS_WaitingReady:
+                break;
+            case STATUS_Ready:
+                break;
+            case STATUS_Speaking:
+                stopListening();
+                break;
+            case STATUS_Recognition:
+                break;
+            default:
+                break;
+        }
+        cancel();
+    }
+
+    public void stopListening() {
         mSpeechRecognizer.stopListening();
         status = STATUS_Recognition;
     }
@@ -235,7 +263,7 @@ public class VoiceHandler implements RecognitionListener {
             mProgressDialog.dismiss();
         }
         if (listener != null) {
-            listener.handleMessage(200, message);
+            listener.onSpeechMessage(VoiceHandler.CODE_DATA, message);
         }
     }
 
@@ -246,7 +274,7 @@ public class VoiceHandler implements RecognitionListener {
     }
 
     public interface OnRecognitionListener {
-        void handleMessage(int statusCode, String message);
+        void onSpeechMessage(int statusCode, String message);
     }
 
 }
