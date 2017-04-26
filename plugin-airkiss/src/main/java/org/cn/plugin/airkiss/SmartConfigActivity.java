@@ -184,12 +184,10 @@ public class SmartConfigActivity extends AppCompatActivity {
         map.put(AirKissConst.KEYS_MQTT_PASSWORD, mBinding.mqttPassword.getText().toString());
     }
 
+    int retryCount = 0;
+
     public void startTCPConfig(String host) {
         try {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-            }
             Socket socket = new Socket(host, 8266);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -205,16 +203,22 @@ public class SmartConfigActivity extends AppCompatActivity {
             baos.write(0);
 
             OutputStream os = socket.getOutputStream();
-//            int len = baos.size();
-//            os.write((len >> 24) & 0xFF);
-//            os.write((len >> 16) & 0xFF);
-//            os.write((len >> 8) & 0xFF);
-//            os.write((len) & 0xFF);
             os.write(baos.toByteArray());
             os.flush();
             socket.close();
+            retryCount = 0;
         } catch (IOException e) {
             e.printStackTrace();
+            if (retryCount < 10) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignored) {
+                }
+                retryCount++;
+                startTCPConfig(host);
+            } else {
+                retryCount = 0;
+            }
         }
     }
 
