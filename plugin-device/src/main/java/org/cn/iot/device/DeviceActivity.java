@@ -71,14 +71,14 @@ public class DeviceActivity extends BaseActivity {
         mBinding.btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String path = "";
+                String method;
                 switch (action) {
                     case ACTION_DEVICE_ADD: {
-                        path = "/iot/device/save";
+                        method = "iot.device.save";
                         break;
                     }
                     case ACTION_DEVICE_EDIT: {
-                        path = "/iot/device/update";
+                        method = "iot.device.update";
                         break;
                     }
                     default:
@@ -100,13 +100,17 @@ public class DeviceActivity extends BaseActivity {
                     return;
                 }
 
+                JSONObject biz = new JSONObject();
+                biz.put("deviceId", deviceId);
+                biz.put("name", name);
+                biz.put("type", type);
+                biz.put("description", mBinding.description.getText().toString());
+                biz.put("parentId", ((DeviceType)mBinding.parentId.getSelectedItem()).getKey());
+
                 JSONObject param = new JSONObject();
-                param.put("deviceId", deviceId);
-                param.put("name", name);
-                param.put("type", type);
-                param.put("description", mBinding.description.getText().toString());
-                param.put("parentId", ((DeviceType)mBinding.parentId.getSelectedItem()).getKey());
-                RpcEngine.post(DeviceConst.API_HOST + path, param.toString(), new ResponseListener<Response>() {
+                param.put("method", method);
+                param.put("content", biz.toJSONString());
+                RpcEngine.post(DeviceConst.API_HOST + "/getaway", param.toString(), new ResponseListener<Response>() {
                     @Override
                     public void onResponse(Response response) {
                         try {

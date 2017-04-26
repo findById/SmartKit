@@ -30,17 +30,15 @@ import org.cn.plugin.rpc.Response;
 import org.cn.plugin.rpc.ResponseListener;
 import org.cn.plugin.rpc.RpcEngine;
 
-import java.util.List;
-
 /**
  * Created by chenning on 2016/8/24.
  *
  * @Description 设备列表
  */
 public class DeviceListFragment extends BaseFragment {
-    public static final String DEVICE_GROUP_ID = "device.group.id";
+    public static final String DEVICE_ID = "device.id";
 
-    private String deviceGroupId;
+    private String deviceId;
 
     private FragmentDeviceListBinding mDeviceListBinding;
 
@@ -52,19 +50,18 @@ public class DeviceListFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            deviceGroupId = savedInstanceState.getString(DEVICE_GROUP_ID, "");
+            deviceId = savedInstanceState.getString(DEVICE_ID, "");
         }
-        if (!TextUtils.isEmpty(deviceGroupId) && getArguments() != null) {
-            deviceGroupId = getArguments().getString(DEVICE_GROUP_ID, "");
+        if (!TextUtils.isEmpty(deviceId) && getArguments() != null) {
+            deviceId = getArguments().getString(DEVICE_ID, "");
         }
-
 
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver, new IntentFilter("UPDATE"));
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString(DEVICE_GROUP_ID, deviceGroupId);
+        outState.putString(DEVICE_ID, deviceId);
         super.onSaveInstanceState(outState);
     }
 
@@ -98,8 +95,6 @@ public class DeviceListFragment extends BaseFragment {
         mDeviceListBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mDeviceListBinding.recyclerView.addItemDecoration(new DeviceListDivider(getActivity()));
         mDeviceListBinding.recyclerView.setAdapter(mDeviceListAdapter);
-
-        mDeviceListBinding.setDeviceGroupId(deviceGroupId);
     }
 
     private void initData() {
@@ -107,22 +102,34 @@ public class DeviceListFragment extends BaseFragment {
     }
 
     private void requestData() {
+        JSONObject biz = new JSONObject();
+        biz.put("deviceId", "ESP8266");
+
         JSONObject param = new JSONObject();
-        param.put("groupId", deviceGroupId);
-        RpcEngine.post(DeviceConst.API_HOST + "/iot/device/list", param.toString(), new ResponseListener<Response>() {
+        param.put("method", "iot.device.find");
+        param.put("content", biz.toJSONString());
+        RpcEngine.post(DeviceConst.API_HOST + "/getaway", param.toJSONString(), new ResponseListener<Response>() {
             @Override
             public void onResponse(Response response) {
                 try {
                     if (!response.isSuccess()) {
                         return;
                     }
-                    List<Device> list = JSON.parseArray(response.result, Device.class);
+                    JSONObject obj = JSON.parseObject(response.result).getJSONObject("result");
+                    int statusCode = obj.getInteger("statusCode");
+                    if (statusCode != 200) {
+                        return;
+                    }
+                    Device device = JSON.parseObject(obj.getJSONObject("result").toJSONString(), Device.class);
+                    if (device == null || device.getItems() == null) {
+                        return;
+                    }
 
                     if (isRefresh) {
                         isRefresh = false;
-                        mDeviceListAdapter.updateData(list);
+                        mDeviceListAdapter.updateData(device.getItems());
                     } else {
-                        mDeviceListAdapter.addAll(list);
+                        mDeviceListAdapter.addAll(device.getItems());
                     }
                 } catch (Throwable e) {
                     e.printStackTrace();
@@ -134,7 +141,6 @@ public class DeviceListFragment extends BaseFragment {
                 }
             }
         });
-
     }
 
     @Override

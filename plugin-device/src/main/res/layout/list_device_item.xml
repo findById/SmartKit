@@ -3,11 +3,11 @@
 
     <data>
 
-        <import type="org.cn.iot.device.model.Device" />
+        <import type="org.cn.iot.device.model.DeviceItem" />
 
         <variable
-            name="device"
-            type="Device" />
+            name="deviceItem"
+            type="DeviceItem" />
     </data>
 
     <LinearLayout
@@ -38,7 +38,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
-                        android:text="@{device.deviceId}" />
+                        android:text="@{deviceItem.type}" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -51,14 +51,14 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center_vertical"
-                        android:text="@{device.name}" />
+                        android:text="@{deviceItem.name}" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
                         android:layout_gravity="right"
-                        android:text="@{device.state}" />
+                        android:text="@{deviceItem.metadata}" />
 
                 </LinearLayout>
 
@@ -71,7 +71,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
-                    android:text="@{device.description}" />
+                    android:text="@{deviceItem.description}" />
             </LinearLayout>
 
             <android.support.v7.widget.SwitchCompat

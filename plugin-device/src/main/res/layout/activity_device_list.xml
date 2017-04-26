@@ -25,10 +25,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
-                app:navigationIcon="@drawable/back_ic_arrow_left"
-                app:popupTheme="@style/AppTheme.PopupOverlay"
-                app:title="@{title}" />
-
+                android:popupTheme="@style/AppTheme.AppBarOverlay"
+                app:title="@{title}"/>
         </android.support.design.widget.AppBarLayout>
 
         <LinearLayout

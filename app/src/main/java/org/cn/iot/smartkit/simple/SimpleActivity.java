@@ -39,6 +39,7 @@ public class SimpleActivity extends AppCompatActivity {
 
     private SwitchCompat mSwitchCompat;
     private TextView mDeviceStatus;
+    private TextView mDataView;
 
     private String deviceId = "";
 
@@ -85,6 +86,8 @@ public class SimpleActivity extends AppCompatActivity {
                 MessageService.publish(v.getContext(), deviceId, "x");
             }
         });
+
+        mDataView = (TextView) findViewById(R.id.metadata);
     }
 
     private void initData() {
@@ -123,27 +126,14 @@ public class SimpleActivity extends AppCompatActivity {
                             case MessageType.REPORT: {
                                 JSONArray array = JSON.parseArray(message.body);
                                 for (int i = 0; i < array.size(); i++) {
-                                    JSONObject item = array.getJSONObject(i);
-                                    System.out.println(item.toJSONString());
+                                    handleMessage(array.getJSONObject(i));
                                 }
                                 break;
                             }
                             case MessageType.NOTIFY: {
                                 JSONArray array = JSON.parseArray(message.body);
                                 for (int i = 0; i < array.size(); i++) {
-                                    JSONObject item = array.getJSONObject(i);
-                                    switch (item.getString("type")) {
-                                        case "relay": {
-                                            if ("opened".equals(item.getString("metadata"))) {
-                                                mSwitchCompat.setChecked(true);
-                                            } else {
-                                                mSwitchCompat.setChecked(false);
-                                            }
-                                            break;
-                                        }
-                                        default:
-                                            break;
-                                    }
+                                    handleMessage(array.getJSONObject(i));
                                 }
                                 break;
                             }
@@ -165,6 +155,32 @@ public class SimpleActivity extends AppCompatActivity {
             }
         }
     };
+
+    private void handleMessage(JSONObject item) {
+        System.out.println(item.toJSONString());
+        switch (item.getString("t")) {
+            case "0": {
+                if ("1".equals(item.getString("d"))) {
+                    mSwitchCompat.setChecked(true);
+                } else {
+                    mSwitchCompat.setChecked(false);
+                }
+                break;
+            }
+            case "1": {
+                String metadata = item.getString("d");
+                if (metadata.contains(",")) {
+                    final String[] temp = metadata.split(",");
+                    if (temp != null && temp.length > 2 && "1".equals(temp[0])) {
+                        mDataView.setText(String.format("温度 %s°C, 湿度 %s%%", temp[1], temp[2]));
+                    }
+                }
+                break;
+            }
+            default:
+                break;
+        }
+    }
 
     private void upgrade(String deviceId, String version) {
         String check = "https://raw.githubusercontent.com/findById/esp-ota/master/v1/build";

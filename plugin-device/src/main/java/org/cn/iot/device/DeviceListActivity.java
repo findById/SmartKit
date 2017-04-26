@@ -11,14 +11,16 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.view.View;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import org.cn.iot.device.databinding.ActivityDeviceListBinding;
 import org.cn.iot.device.fragment.DeviceListFragment;
 import org.cn.iot.device.internal.BaseActivity;
-import org.cn.iot.device.model.DeviceGroup;
+import org.cn.iot.device.model.Device;
+import org.cn.plugin.rpc.Response;
+import org.cn.plugin.rpc.ResponseListener;
+import org.cn.plugin.rpc.RpcEngine;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,14 +31,17 @@ import java.util.List;
  */
 public class DeviceListActivity extends BaseActivity {
 
-    private ActivityDeviceListBinding mDeviceListBinding;
+    private ActivityDeviceListBinding mBinding;
 
     private LayoutAdapter mLayoutAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDeviceListBinding = DataBindingUtil.setContentView(this, R.layout.activity_device_list);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_device_list);
+
+        setSupportActionBar(mBinding.toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         initView();
         initData();
@@ -44,11 +49,11 @@ public class DeviceListActivity extends BaseActivity {
     }
 
     private void initView() {
-        mDeviceListBinding.tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-        mDeviceListBinding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        mBinding.tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        mBinding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                mDeviceListBinding.viewPager.setCurrentItem(tab.getPosition(), true);
+                mBinding.viewPager.setCurrentItem(tab.getPosition(), true);
             }
 
             @Override
@@ -61,19 +66,19 @@ public class DeviceListActivity extends BaseActivity {
         });
 
         mLayoutAdapter = new LayoutAdapter(getSupportFragmentManager());
-        mDeviceListBinding.viewPager.setAdapter(mLayoutAdapter);
+        mBinding.viewPager.setAdapter(mLayoutAdapter);
 
-        mDeviceListBinding.tabLayout.setupWithViewPager(mDeviceListBinding.viewPager);
-        mDeviceListBinding.viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mDeviceListBinding.tabLayout));
+        mBinding.tabLayout.setupWithViewPager(mBinding.viewPager);
+        mBinding.viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mBinding.tabLayout));
 
-        mDeviceListBinding.setTitle("Devices");
-        mDeviceListBinding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        mBinding.setTitle("Devices");
+        mBinding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
-        mDeviceListBinding.btnDevice.setOnClickListener(new View.OnClickListener() {
+        mBinding.btnDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), DeviceActivity.class);
@@ -88,26 +93,32 @@ public class DeviceListActivity extends BaseActivity {
     }
 
     private void requestData() {
+        JSONObject biz = new JSONObject();
+        biz.put("userId", "client");
 
-        List<DeviceGroup> list = new ArrayList<>();
-        try {
-            InputStream is = getResources().getAssets().open("device_group.json");
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024 * 8];
-            int len;
-            while ((len = is.read(buffer)) >= 0) {
-                baos.write(buffer, 0, len);
+        JSONObject param = new JSONObject();
+        param.put("method", "iot.device.list");
+        param.put("content", biz.toJSONString());
+        RpcEngine.post(DeviceConst.API_HOST + "/getaway", param.toJSONString(), new ResponseListener<Response>() {
+            @Override
+            public void onResponse(Response response) {
+                if (!response.isSuccess()) {
+                    return;
+                }
+                JSONObject obj = JSON.parseObject(response.result).getJSONObject("result");
+                int statusCode = obj.getInteger("statusCode");
+                if (statusCode != 200) {
+                    return;
+                }
+                List<Device> list = JSON.parseArray(obj.getJSONArray("result").toJSONString(), Device.class);
+                mLayoutAdapter.updateData(list);
             }
-            list.addAll(JSON.parseArray(baos.toString(), DeviceGroup.class));
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        mLayoutAdapter.updateData(list);
+        });
     }
 
     class LayoutAdapter extends FragmentPagerAdapter {
 
-        private List<DeviceGroup> mData = new ArrayList<>();
+        private List<Device> mData = new ArrayList<>();
 
         public LayoutAdapter(FragmentManager fm) {
             super(fm);
@@ -116,7 +127,7 @@ public class DeviceListActivity extends BaseActivity {
         @Override
         public Fragment getItem(int position) {
             Bundle bundle = new Bundle();
-            bundle.putString(DeviceListFragment.DEVICE_GROUP_ID, mData.get(position).getId());
+            bundle.putString(DeviceListFragment.DEVICE_ID, mData.get(position).getDeviceId());
 
             Fragment fragment = new DeviceListFragment();
             fragment.setArguments(bundle);
@@ -135,16 +146,16 @@ public class DeviceListActivity extends BaseActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return mData.get(position).getName();
+            return mData.get(position).getGroupName();
         }
 
-        public void updateData(List<DeviceGroup> list) {
+        public void updateData(List<Device> list) {
             mData.clear();
             if (list != null) {
                 mData.addAll(list);
             }
             if (mData.size() <= 3) {
-                mDeviceListBinding.tabLayout.setTabMode(TabLayout.MODE_FIXED);
+                mBinding.tabLayout.setTabMode(TabLayout.MODE_FIXED);
             }
             notifyDataSetChanged();
         }

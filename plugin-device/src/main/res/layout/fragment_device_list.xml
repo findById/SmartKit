@@ -2,10 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
-
         <variable
-            name="deviceGroupId"
-            type="java.lang.String" />
+            name="deviceId"
+            type="java.lang.String"/>
     </data>
 
     <LinearLayout

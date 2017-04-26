@@ -1,20 +1,40 @@
 package org.cn.iot.device.model;
 
+import java.util.List;
+import java.util.UUID;
+
+import info.breezes.orm.annotation.Column;
+import info.breezes.orm.annotation.Table;
+
 /**
  * Created by chenning on 2016/8/24.
  */
+@Table(name = "iot_device")
 public class Device {
-
-    private String id;
+    @Column(primaryKey = true, name = "id")
+    public String id = UUID.randomUUID().toString();
+    @Column(name = "device_id")
     private String deviceId;
+    @Column(name = "name")
     private String name;
-    private String label;
+    @Column(name = "model")
+    private String model;
+    @Column(name = "location")
+    private String location;
+    @Column(name = "type")
     private String type;
-    private String state;
-    private String description;
-    private String lastActiveTime;
+    @Column(name = "state")
+    private String state = "enabled";
+    @Column(name = "group_name")
+    private String groupName;
 
-    private String relay = "closed";
+    @Column(name = "description")
+    private String description;
+    @Column(name = "last_active_time")
+    private String lastActiveTime;
+    @Column(name = "parent_id")
+    private String parentId;
+    private List<DeviceItem> items;
 
     public String getId() {
         return id;
@@ -40,12 +60,20 @@ public class Device {
         this.name = name;
     }
 
-    public String getLabel() {
-        return label;
+    public String getModel() {
+        return model;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public String getType() {
@@ -64,6 +92,14 @@ public class Device {
         this.state = state;
     }
 
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -80,11 +116,19 @@ public class Device {
         this.lastActiveTime = lastActiveTime;
     }
 
-    public String getRelay() {
-        return relay;
+    public String getParentId() {
+        return parentId;
     }
 
-    public void setRelay(String relay) {
-        this.relay = relay;
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public List<DeviceItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<DeviceItem> items) {
+        this.items = items;
     }
 }
