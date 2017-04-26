@@ -5,8 +5,8 @@ package org.cn.plugin.message.model;
  */
 
 public enum LogicType {
-    RELAY("relay"),
-    HT("HT");
+    RELAY("0"), // relay
+    HT("1"); // temperature & humidity
 
     public String value;
 

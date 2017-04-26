@@ -28,14 +28,14 @@ public class MessageReceiver extends BroadcastReceiver {
                 String text = intent.getStringExtra(MessageService.EXTRA_MESSAGE_BODY);
                 try {
                     JSONObject obj = JSON.parseObject(text);
-                    String msgType = obj.getString("type");
+                    String msgType = obj.getString("t"); // type
 
                     Message message = new Message();
 
-                    message.producerId = obj.getString("deviceId");
+                    message.producerId = obj.getString("id"); // deviceId
                     message.consumerId = consumerId;
                     message.msgType = msgType;
-                    message.body = obj.getString("logic");
+                    message.body = obj.getString("l"); // logic
 
                     if (hasNotify(msgType)) {
                         showNotification(context, message);

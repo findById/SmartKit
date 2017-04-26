@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import org.cn.plugin.message.adapter.MessageAdapter;
 import org.cn.plugin.message.databinding.ActivityMessageBinding;
@@ -37,6 +38,9 @@ import org.cn.plugin.message.service.MessageService;
 import org.cn.plugin.message.utils.KeyboardUtil;
 import org.cn.plugin.message.utils.OrmHelper;
 import org.cn.plugin.message.utils.PermissionManager;
+import org.cn.plugin.rpc.Response;
+import org.cn.plugin.rpc.ResponseListener;
+import org.cn.plugin.rpc.RpcEngine;
 import org.cn.plugin.voice.EventHandler;
 import org.cn.plugin.voice.TextToAudio;
 import org.cn.plugin.voice.VoiceHandler;
@@ -179,7 +183,10 @@ public class MessageActivity extends AppCompatActivity implements VoiceHandler.O
 
         List<Message> list = OrmHelper.getInstance().query(Message.class).toList();
         if (list != null && !list.isEmpty()) {
-            mMessageAdapter.setData(list);
+            // mMessageAdapter.setData(list);
+            for (Message msg : list) {
+                handleMessage(msg, false);
+            }
         }
     }
 
@@ -294,46 +301,39 @@ public class MessageActivity extends AppCompatActivity implements VoiceHandler.O
 
         if ("开灯".equals(message) || "open".equals(message)) {
             MessageService.publish(this, consumer, "051");
+            restartVoice = true;
+            playMessage("命令已发送");
         } else if ("关灯".equals(message) || "close".equals(message)) {
             MessageService.publish(this, consumer, "050");
-        }
+            restartVoice = true;
+            playMessage("命令已发送");
+        } else {
+            JSONObject param = new JSONObject();
+            param.put("key", "");
+            param.put("userid", "1");
+            param.put("info", message);
 
-//        JSONObject param = new JSONObject();
-//        param.put("userId", MessageActivity.userId);
-//        param.put("content", message);
-//        param.put("timestamp", System.currentTimeMillis());
-//        RpcEngine.post(MessageConst.API_HOST + "/iot/message", param.toString(), new ResponseListener<Response>() {
-//            @Override
-//            public void onResponse(final Response response) {
-//                try {
-//                    if (!response.isSuccess()) {
-//                        handleMessage(new Message("sys", "", MessageType.NOTIFY, response.message));
-//                        return;
-//                    }
-//                    JSONObject obj = JSON.parseObject(response.result);
-//                    int statusCode = obj.getInteger("statusCode");
-//                    if (statusCode != 200) {
-//                        handleMessage(new Message("sys", "", MessageType.NOTIFY, obj.getString("message")));
-//                        return;
-//                    }
-//                    JSONObject result = obj.getJSONObject("result");
-//
-//                    String msgType = result.getString("msgType");
-//                    String msg = result.getString("content");
-//
-//                    handleMessage(new Message("ai", userId, msgType, msg));
-//
-//                    if (MessageType.TEXT.equals(msgType)) {
-//                        playMessage(msg);
-//                    }
-//                } catch (Throwable e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
+            RpcEngine.post("http://www.tuling123.com/openapi/api", param.toJSONString(), new ResponseListener<Response>() {
+                @Override
+                public void onResponse(Response response) {
+                    try {
+                        JSONObject obj = JSON.parseObject(response.result);
+                        int code = obj.getInteger("code");
+                        if (code == 100000) {
+                            restartVoice = true;
+                            String msg = obj.getString("text");
+                            handleMessage(new Message("turing", userId, MessageType.TEXT, msg), true);
+                            playMessage(msg);
+                        }
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
     }
 
-    private void handleMessage(Message message) {
+    private void handleMessage(Message message, boolean store) {
         switch (message.msgType) {
             case MessageType.REPORT: {
                 List<Logic> logicList = JSON.parseArray(message.body, Logic.class);
@@ -350,11 +350,27 @@ public class MessageActivity extends AppCompatActivity implements VoiceHandler.O
             case MessageType.NOTIFY: {
                 List<Logic> logicList = JSON.parseArray(message.body, Logic.class);
                 if (logicList != null && !logicList.isEmpty()) {
+                    message.body = "";
                     for (Logic logic : logicList) {
                         if (LogicType.RELAY.value.equals(logic.type)) {
                             message.msgType = MessageType.TEXT;
-                            message.body = logic.metadata;
-                            break;
+                            if (TextUtils.isEmpty(message.body)) {
+                                message.body = String.format("P%s: %s", logic.pin, "0".equals(logic.metadata) ? "closed" : "opened");
+                            } else {
+                                message.body += String.format("\nP%s: %s", logic.pin, "0".equals(logic.metadata) ? "closed" : "opened");
+                            }
+                        } else if (LogicType.HT.value.equals(logic.type)) {
+                            message.msgType = MessageType.TEXT;
+                            if (logic.metadata.contains(",")) {
+                                String[] temp = logic.metadata.split(",");
+                                if (temp != null && temp.length > 2 && "1".equals(temp[0])) {
+                                    if (TextUtils.isEmpty(message.body)) {
+                                        message.body = String.format("P%s: %s°C, %s%%", logic.pin, temp[1], temp[2]);
+                                    } else { // °C °F %
+                                        message.body += String.format("\nP%s: %s°C, %s%%", logic.pin, temp[1], temp[2]);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -364,7 +380,9 @@ public class MessageActivity extends AppCompatActivity implements VoiceHandler.O
                 break;
         }
         mMessageAdapter.add(message);
-        OrmHelper.getInstance().insert(message);
+        if (store) {
+            OrmHelper.getInstance().insert(message);
+        }
     }
 
     private void playMessage(String text) {
@@ -412,7 +430,7 @@ public class MessageActivity extends AppCompatActivity implements VoiceHandler.O
         public void onReceive(Context context, Intent intent) {
             if (ACTION_MESSAGE.equals(intent.getAction())) {
                 Message message = (Message) intent.getSerializableExtra(EXTRA_MESSAGE_DATA);
-                handleMessage(message);
+                handleMessage(message, true);
             }
         }
     };
@@ -451,6 +469,9 @@ public class MessageActivity extends AppCompatActivity implements VoiceHandler.O
                 if ("停止工作".equals(message)) {
                     voiceHandler.stop();
                     eventHandler.startSpeechEvent();
+
+                    restartVoice = false;
+                    playMessage("语音唤醒已开启");
                     break;
                 }
 
@@ -458,6 +479,7 @@ public class MessageActivity extends AppCompatActivity implements VoiceHandler.O
                 break;
             }
             case VoiceHandler.CODE_ERROR: {
+                restartVoice = true;
                 playMessage(message);
                 break;
             }
