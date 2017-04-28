@@ -21,7 +21,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import org.cn.iot.smartkit.BuildConfig;
 import org.cn.iot.smartkit.R;
+import org.cn.plugin.common.optional.OptionalConst;
+import org.cn.plugin.common.optional.OptionalManager;
 import org.cn.plugin.message.MessageActivity;
 import org.cn.plugin.message.model.Message;
 import org.cn.plugin.message.model.MessageType;
@@ -138,8 +141,7 @@ public class SimpleActivity extends AppCompatActivity {
                                 break;
                             }
                             case MessageType.UPGRADE: {
-                                JSONObject obj = JSON.parseObject(message.body);
-                                upgrade(message.producerId, obj.getString("v"));
+                                upgrade(message.producerId, message.body);
                                 break;
                             }
                             default:
@@ -184,7 +186,7 @@ public class SimpleActivity extends AppCompatActivity {
 
     private void upgrade(String deviceId, String version) {
         String check = "https://raw.githubusercontent.com/findById/esp-ota/master/v1/build";
-        final String v1 = "https://github.com/findById/esp-ota/raw/master/v1/esp-8266.bin";
+        final String ota = OptionalManager.getString(OptionalConst.KEY_OTA_UPDATE);
         new AsyncTask<String, Void, Boolean>() {
             String deviceId;
             String version;
@@ -223,14 +225,14 @@ public class SimpleActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(Boolean result) {
                 super.onPostExecute(result);
-                if (result) {
+                if (result || BuildConfig.DEBUG) {
                     new AlertDialog.Builder(SimpleActivity.this)
                             .setCancelable(true)
                             .setMessage("是否更新固件")
                             .setPositiveButton("更新", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    MessageService.publish(mSwitchCompat.getContext(), deviceId, "u" + v1);
+                                    MessageService.publish(mSwitchCompat.getContext(), deviceId, "u" + ota);
                                 }
                             })
                             .setNegativeButton("取消", null)

@@ -21,6 +21,10 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="更多">
+        <EditTextPreference
+            android:key="ota_update"
+            android:summary="OTA 更新地址"
+            android:title="OTA" />
         <PreferenceScreen
             android:key="clean_message_cache"
             android:summary="清空消息记录"

@@ -97,6 +97,10 @@ public class OptionalActivity extends BaseActivity {
             mqtt_message_password.setOnPreferenceChangeListener(listener);
             mqtt_message_password.setSummary(OptionalManager.getString(OptionalConst.KEY_MQTT_SERVER_PASSWORD, ""));
 
+            Preference ota = findPreference(OptionalConst.KEY_OTA_UPDATE);
+            ota.setOnPreferenceChangeListener(listener);
+            ota.setSummary(OptionalManager.getString(OptionalConst.KEY_OTA_UPDATE, ""));
+
             findPreference(OptionalConst.KEY_CLEAN_MESSAGE_CACHE).setOnPreferenceClickListener(clickListener);
         }
 
