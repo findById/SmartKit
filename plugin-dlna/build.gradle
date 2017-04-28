@@ -1,17 +1,20 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+
     dataBinding {
         enabled true
     }
+
     defaultConfig {
-        applicationId "org.cn.iot.smartkit"
         minSdkVersion 19
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
+        setMultiDexEnabled(true)
+        getVectorDrawables().setUseSupportLibrary(true)
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -28,14 +31,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.2.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support:design:25.3.1'
     testCompile 'junit:junit:4.12'
-
-    compile project(':plugin-airkiss')
-    compile project(':plugin-message')
-    compile project(':plugin-voice')
-    compile project(':plugin-device')
-    compile project(path: ':plugin-common')
-    compile project(path: ':plugin-dlna')
+    compile project(path: ':plugin-rpc')
+    compile project(path: ':plugin-rpc')
 }

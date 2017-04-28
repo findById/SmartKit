@@ -1,1 +1,1 @@
-include ':app', ':plugin-airkiss', ':plugin-voice', ':plugin-message', ':plugin-rpc', ':plugin-device', ':plugin-common'
+include ':app', ':plugin-airkiss', ':plugin-voice', ':plugin-message', ':plugin-rpc', ':plugin-device', ':plugin-common', ':plugin-dlna'
