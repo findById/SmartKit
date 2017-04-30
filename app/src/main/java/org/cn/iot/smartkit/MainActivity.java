@@ -19,6 +19,7 @@ import org.cn.iot.smartkit.common.OptionalActivity;
 import org.cn.iot.smartkit.simple.SimpleActivity;
 import org.cn.iot.smartkit.utils.PermissionUtils;
 import org.cn.plugin.airkiss.SmartConfigActivity;
+import org.cn.plugin.dlna.utils.DeviceUtil;
 import org.cn.plugin.message.MessageActivity;
 
 public class MainActivity extends BaseActivity
@@ -37,8 +38,7 @@ public class MainActivity extends BaseActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, SimpleActivity.class);
-                startActivity(intent);
+                DeviceUtil.search();
             }
         });
 
@@ -123,6 +123,11 @@ public class MainActivity extends BaseActivity
             }
             case R.id.nav_timeline: {
 
+                break;
+            }
+            case R.id.nav_simple: {
+                Intent intent = new Intent(MainActivity.this, SimpleActivity.class);
+                startActivity(intent);
                 break;
             }
             default:

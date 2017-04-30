@@ -21,7 +21,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import org.cn.plugin.dlna.common.DLNAConst;
-import org.cn.plugin.dlna.databinding.ItemListDeviceBinding;
+import org.cn.plugin.dlna.databinding.ItemMediaDeviceListBinding;
 import org.cn.plugin.dlna.helper.ControlHelper;
 import org.cn.plugin.dlna.model.DeviceInfo;
 import org.cn.plugin.dlna.utils.DeviceUtil;
@@ -42,7 +42,7 @@ public class DeviceListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_device_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_media_device_list, container, false);
         initView(view);
         return view;
     }
@@ -56,12 +56,13 @@ public class DeviceListFragment extends Fragment {
         mRecyclerView.setAdapter(mDeviceListAdapter);
 
         getActivity().registerReceiver(receiver, new IntentFilter(DLNAConst.ACTION_DLNA_DEVICES_NOTIFY));
-
+        DeviceUtil.start(getActivity());
         initData();
     }
 
     @Override
     public void onDestroy() {
+        DeviceUtil.stop();
         getActivity().unregisterReceiver(receiver);
         super.onDestroy();
     }
@@ -96,7 +97,7 @@ public class DeviceListFragment extends Fragment {
 
         @Override
         public DeviceListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            ItemListDeviceBinding bind = DataBindingUtil.inflate(mInflater, R.layout.item_list_device, parent, false);
+            ItemMediaDeviceListBinding bind = DataBindingUtil.inflate(mInflater, R.layout.item_media_device_list, parent, false);
             return new ViewHolder(bind);
         }
 
@@ -129,9 +130,9 @@ public class DeviceListFragment extends Fragment {
 
         class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-            ItemListDeviceBinding mBind;
+            ItemMediaDeviceListBinding mBind;
 
-            public ViewHolder(ItemListDeviceBinding mBind) {
+            public ViewHolder(ItemMediaDeviceListBinding mBind) {
                 super(mBind.getRoot());
                 this.mBind = mBind;
                 mBind.layoutDevice.setOnClickListener(this);

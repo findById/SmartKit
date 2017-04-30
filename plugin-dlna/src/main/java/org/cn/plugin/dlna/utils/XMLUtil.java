@@ -6,12 +6,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
  * Created by chenning on 17-1-13.
@@ -36,10 +36,19 @@ public class XMLUtil {
             map.put("modelName", element.getElementsByTagName("modelName").item(0).getFirstChild().getNodeValue());
             map.put("UDN", element.getElementsByTagName("UDN").item(0).getFirstChild().getNodeValue());
 
+            map.putAll(parseServiceList(element.getElementsByTagName("serviceList")));
+            map.putAll(parseIcon(element.getElementsByTagName("iconList")));
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
 
-            NodeList serviceList = element.getElementsByTagName("serviceList");
-            for (int i = 0; i < serviceList.getLength(); i++) {
-                NodeList childs = serviceList.item(i).getChildNodes();
+    private static Map<String, String> parseServiceList(NodeList nodeList) {
+        Map<String, String> map = new HashMap<>();
+        try {
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                NodeList childs = nodeList.item(i).getChildNodes();
                 for (int j = 0; j < childs.getLength(); j++) {
                     NodeList child = childs.item(j).getChildNodes();
                     boolean av = false;
@@ -57,8 +66,6 @@ public class XMLUtil {
                     }
                 }
             }
-
-            map.putAll(parseIcon(element.getElementsByTagName("iconList")));
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -68,7 +75,9 @@ public class XMLUtil {
     private static Map<String, String> parseIcon(NodeList iconList) {
         Map<String, String> map = new HashMap<>();
         try {
-
+            if (iconList == null || iconList.getLength() <= 0) {
+                return map;
+            }
             for (int i = 0; i < iconList.getLength(); i++) {
                 NodeList childs = iconList.item(i).getChildNodes();
                 for (int j = 0; j < childs.getLength(); j++) {

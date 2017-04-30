@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.widget.ImageView;
 
 import java.net.HttpURLConnection;
@@ -24,7 +25,7 @@ public class ImageLoader {
     }
 
     public static void display(final String url, final ImageView view) {
-        if (url == null || view == null) {
+        if (TextUtils.isEmpty(url) || view == null) {
             return;
         }
         new Thread(new Runnable() {
