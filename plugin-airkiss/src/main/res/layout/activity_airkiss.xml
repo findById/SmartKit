@@ -47,7 +47,7 @@
                         android:id="@+id/apSsid"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:drawableRight="@drawable/ic_arrow_down"
+                        android:drawableEnd="@drawable/ic_arrow_down"
                         android:focusableInTouchMode="false"
                         android:gravity="center_vertical"
                         android:hint="Wi-Fi名称"
@@ -117,7 +117,7 @@
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
                         android:hint="MQTT密码"
-                        android:inputType="text" />
+                        android:inputType="textPassword" />
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>

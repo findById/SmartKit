@@ -41,7 +41,7 @@ public class EspWifiUtil {
 		final long interval = 20;
 		String ssidAscii = ssid;
 
-		WifiManager wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
+		WifiManager wifiManager = (WifiManager) ctx.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 		wifiManager.startScan();
 
 		boolean isBreak = false;
@@ -77,7 +77,7 @@ public class EspWifiUtil {
 
 	// get the wifi info which is "connected" in wifi-setting
 	private static WifiInfo getConnectionInfo(Context ctx) {
-		WifiManager mWifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
+		WifiManager mWifiManager = (WifiManager) ctx.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 		WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
 		return wifiInfo;
 	}

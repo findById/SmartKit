@@ -15,6 +15,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -128,7 +129,7 @@ public class DeviceUtil {
         if (data == null || data.isEmpty()) {
             return false;
         }
-        if (data.toUpperCase().startsWith("M-SEARCH")) {
+        if (data.toUpperCase(Locale.getDefault()).startsWith("M-SEARCH")) {
             return false;
         }
         DeviceMessage message = new DeviceMessage();
@@ -153,13 +154,13 @@ public class DeviceUtil {
         if (nts == null || nts.isEmpty()) {
             return false;
         }
-        if (nts.toUpperCase().contains(":BYEBYE")) {
+        if (nts.toUpperCase(Locale.getDefault()).contains(":BYEBYE")) {
             if (DeviceUtil.has(message.id)) {
                 DeviceUtil.remove(message.id);
             }
             return true;
         }
-        if (nts.toUpperCase().contains(":ALIVE")) {
+        if (nts.toUpperCase(Locale.getDefault()).contains(":ALIVE")) {
             if (DeviceUtil.has(message.id)) {
                 return false;
             }

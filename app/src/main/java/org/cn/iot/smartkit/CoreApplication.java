@@ -14,16 +14,9 @@ import java.util.LinkedList;
 
 public class CoreApplication extends Application {
 
-    private static CoreApplication instance;
-
-    public static CoreApplication getInstance() {
-        return instance;
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
-        instance = this;
 
         OptionalManager.init(getApplicationContext());
         OrmHelper.init(getApplicationContext());

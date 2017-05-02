@@ -17,8 +17,8 @@ import org.cn.iot.device.DeviceListActivity;
 import org.cn.iot.smartkit.common.BaseActivity;
 import org.cn.iot.smartkit.common.OptionalActivity;
 import org.cn.iot.smartkit.simple.SimpleActivity;
-import org.cn.iot.smartkit.utils.PermissionUtils;
 import org.cn.plugin.airkiss.SmartConfigActivity;
+import org.cn.plugin.common.permission.PermissionManager;
 import org.cn.plugin.dlna.utils.DeviceUtil;
 import org.cn.plugin.message.MessageActivity;
 
@@ -98,14 +98,14 @@ public class MainActivity extends BaseActivity
                 break;
             }
             case R.id.nav_air_kiss: {
-                PermissionUtils.requestPermissions(this, new PermissionUtils.OnPermissionsCallback() {
+                PermissionManager.requestPermissions(this, new PermissionManager.OnPermissionsCallback() {
                     @Override
                     public void onRequestPermissionsResult(boolean success, String[] permission, int[] grantResult, boolean[] showRequestRationale) {
                         if (success) {
                             Intent intent = new Intent(MainActivity.this, SmartConfigActivity.class);
                             startActivity(intent);
                         } else {
-                            PermissionUtils.toAppSetting(MainActivity.this);
+                            PermissionManager.toAppSetting(MainActivity.this);
                         }
                     }
                 }, Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);

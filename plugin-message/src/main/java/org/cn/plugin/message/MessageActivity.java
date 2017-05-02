@@ -37,7 +37,7 @@ import org.cn.plugin.message.model.MessageType;
 import org.cn.plugin.message.service.MessageService;
 import org.cn.plugin.message.utils.KeyboardUtil;
 import org.cn.plugin.message.utils.OrmHelper;
-import org.cn.plugin.message.utils.PermissionManager;
+import org.cn.plugin.common.permission.PermissionManager;
 import org.cn.plugin.rpc.Response;
 import org.cn.plugin.rpc.ResponseListener;
 import org.cn.plugin.rpc.RpcEngine;
@@ -48,8 +48,6 @@ import org.cn.plugin.voice.VoiceHandler;
 import java.util.List;
 
 public class MessageActivity extends AppCompatActivity implements VoiceHandler.OnRecognitionListener, EventHandler.OnEventSpeechListener {
-    public static final String ACTION_MESSAGE = "action.iot.message.refresh.smartkit";
-    public static final String EXTRA_MESSAGE_DATA = "extra.message.data";
     public static final String EXTRA_CONSUMER_DATA = "extra.consumer.data";
 
     private ActivityMessageBinding mBinding;
@@ -73,7 +71,6 @@ public class MessageActivity extends AppCompatActivity implements VoiceHandler.O
         setSupportActionBar(mBinding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        PermissionManager.init(this);
         PermissionManager.requestPermissions(this, new PermissionManager.OnPermissionsCallback() {
             @Override
             public void onRequestPermissionsResult(boolean success, String[] permission, int[] grantResult, boolean[] showRequestRationale) {
@@ -117,13 +114,13 @@ public class MessageActivity extends AppCompatActivity implements VoiceHandler.O
         initView();
         initData();
 
-        registerReceiver(receiver, new IntentFilter(ACTION_MESSAGE));
+        registerReceiver(receiver, new IntentFilter(MessageConst.ACTION_MESSAGE_ARRIVED));
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        PermissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        PermissionManager.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
     }
 
     @Override
@@ -428,8 +425,8 @@ public class MessageActivity extends AppCompatActivity implements VoiceHandler.O
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (ACTION_MESSAGE.equals(intent.getAction())) {
-                Message message = (Message) intent.getSerializableExtra(EXTRA_MESSAGE_DATA);
+            if (MessageConst.ACTION_MESSAGE_ARRIVED.equals(intent.getAction())) {
+                Message message = (Message) intent.getSerializableExtra(MessageConst.EXTRA_MESSAGE_DATA);
                 handleMessage(message, true);
             }
         }

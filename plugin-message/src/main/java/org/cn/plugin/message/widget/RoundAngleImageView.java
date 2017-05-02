@@ -12,11 +12,10 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import org.cn.plugin.message.R;
 
-public class RoundAngleImageView extends ImageView {
+public class RoundAngleImageView extends android.support.v7.widget.AppCompatImageView {
 
     private Paint paint;
     private int roundWidth = 36;
@@ -47,6 +46,7 @@ public class RoundAngleImageView extends ImageView {
             TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RoundAngleImageView);
             roundWidth = a.getDimensionPixelSize(R.styleable.RoundAngleImageView_roundWidth, roundWidth);
             roundHeight = a.getDimensionPixelSize(R.styleable.RoundAngleImageView_roundHeight, roundHeight);
+            a.recycle();
         }
 
         paint = new Paint();

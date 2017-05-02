@@ -1,6 +1,7 @@
-package org.cn.iot.smartkit.utils;
+package org.cn.plugin.common.permission;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,52 +13,48 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.SparseArray;
 
-import org.cn.iot.smartkit.CoreApplication;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class PermissionUtils {
-    public static final String TAG = "PermissionUtils";
+public class PermissionManager {
+    public static final String TAG = "PermissionManager";
     //安全的reqCode
     private static AtomicInteger integer = new AtomicInteger(0);
     //保存了reqCode 对应的 请求实体
     private static final SparseArray<RequestPermissionEntity> PERMISSION_MAP = new SparseArray<>(7);
 
-    //这里需要 获得 ApplicationContext
-    private static final Context aContext = CoreApplication.getInstance().getApplicationContext(); //ApplicationContext
-
-    public static void requestPermissions(OnPermissionsCallback onPermissionsCallback, String... manifestPermissions) {
-        requestPermissions(null, onPermissionsCallback, manifestPermissions);
+    public static void requestFragmentPermissions(Fragment ctx, OnPermissionsCallback onPermissionsCallback, String... manifestPermissions) {
     }
 
-    public static void requestPermissions(Activity activity, OnPermissionsCallback onPermissionsCallback, String... manifestPermissions) {
-        if (manifestPermissions == null || manifestPermissions.length <= 0) {
+    public static void requestActivityPermissions(Activity ctx, OnPermissionsCallback onPermissionsCallback, String... manifestPermissions) {
+    }
+
+    public static void requestPermissions(Activity activity, OnPermissionsCallback onPermissionsCallback, String... permissions) {
+        if (permissions == null || permissions.length <= 0) {
             return;
         }
-        if (checkSelfPermission(manifestPermissions).length == 0) {
+        if (checkSelfPermission(activity, permissions).length == 0) {
             //都已经授权了
             if (onPermissionsCallback != null) {
-                boolean[] showRequestRationale = new boolean[manifestPermissions.length];
+                boolean[] showRequestRationale = new boolean[permissions.length];
                 Arrays.fill(showRequestRationale, false);
 
-                int[] grantResult = new int[manifestPermissions.length];
+                int[] grantResult = new int[permissions.length];
                 Arrays.fill(grantResult, PackageManager.PERMISSION_GRANTED);
 
-                onPermissionsCallback.onRequestPermissionsResult(true, manifestPermissions, grantResult, showRequestRationale);
+                onPermissionsCallback.onRequestPermissionsResult(true, permissions, grantResult, showRequestRationale);
             }
         } else {
             //没有授权
-            RequestPermissionEntity entity = new RequestPermissionEntity(onPermissionsCallback, manifestPermissions);
+            RequestPermissionEntity entity = new RequestPermissionEntity(onPermissionsCallback, permissions);
             PERMISSION_MAP.put(entity.reqCode, entity);
             entity.requestPermissions(activity);
         }
     }
 
-
-    public static boolean onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public static boolean onRequestPermissionsResult(Activity activity, int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         RequestPermissionEntity entity = PERMISSION_MAP.get(requestCode);
         if (entity != null) {
             boolean success = true;
@@ -70,7 +67,6 @@ public class PermissionUtils {
 
                 if (grantResult != PackageManager.PERMISSION_GRANTED) { //没有授权
                     success = false;
-                    Activity activity = getActivity();
                     if (checkActivity(activity)) {
                         showRequestRationale = !ActivityCompat.shouldShowRequestPermissionRationale(activity, permission);
                     }
@@ -95,8 +91,8 @@ public class PermissionUtils {
      * @param manifestPermission
      * @return
      */
-    public static boolean checkSelfPermission(String manifestPermission) {
-        return ContextCompat.checkSelfPermission(aContext, manifestPermission) == PackageManager.PERMISSION_GRANTED;
+    public static boolean checkSelfPermission(Context ctx, String manifestPermission) {
+        return ContextCompat.checkSelfPermission(ctx, manifestPermission) == PackageManager.PERMISSION_GRANTED;
     }
 
     /**
@@ -105,21 +101,15 @@ public class PermissionUtils {
      * @param manifestPermissions
      * @return 返回没有授权的 权限
      */
-    public static String[] checkSelfPermission(String... manifestPermissions) {
+    public static String[] checkSelfPermission(Context ctx, String... manifestPermissions) {
         List<String> list = new ArrayList<>(3);
         for (int i = 0, len = manifestPermissions == null ? 0 : manifestPermissions.length; i < len; i++) {
-            if (!checkSelfPermission(manifestPermissions[i])) {
+            if (!checkSelfPermission(ctx, manifestPermissions[i])) {
                 list.add(manifestPermissions[i]);
             }
         }
         return list.toArray(new String[list.size()]);
     }
-
-    public static Activity getActivity() {
-        Activity activity = CoreApplication.getInstance().getTopActivity();
-        return activity;
-    }
-
 
     private static boolean checkActivity(Activity activity) {
         return activity != null;
@@ -192,7 +182,6 @@ public class PermissionUtils {
             return permissions;
         }
 
-
         /**
          * 请求权限
          */
@@ -201,9 +190,6 @@ public class PermissionUtils {
                 Log.d(TAG, "requestPermissions: permissions == null || permissions.length <= 0");
                 PERMISSION_MAP.remove(reqCode);
                 return;
-            }
-            if (activity == null) {
-                activity = getActivity();
             }
             if (checkActivity(activity)) {
                 ActivityCompat.requestPermissions(activity, permissions, reqCode);

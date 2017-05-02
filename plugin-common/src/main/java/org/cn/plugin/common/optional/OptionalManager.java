@@ -28,11 +28,11 @@ public class OptionalManager {
 
     public static void put(String key, Object value) {
         if (value instanceof Boolean) {
-            PreferenceManager.getDefaultSharedPreferences(mContext).edit().putBoolean(key, Boolean.valueOf(String.valueOf(value))).commit();
+            PreferenceManager.getDefaultSharedPreferences(mContext).edit().putBoolean(key, Boolean.valueOf(String.valueOf(value))).apply();
         } else if (value instanceof Integer) {
-            PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt(key, Integer.valueOf(String.valueOf(value))).commit();
+            PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt(key, Integer.valueOf(String.valueOf(value))).apply();
         } else {
-            PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(key, String.valueOf(value)).commit();
+            PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(key, String.valueOf(value)).apply();
         }
 
     }

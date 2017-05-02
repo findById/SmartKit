@@ -149,7 +149,7 @@ public class DeviceListFragment extends Fragment {
                     final EditText editText = new EditText(v.getContext());
                     editText.setText("");
                     new AlertDialog.Builder(getActivity())
-                            .setMessage("视频流地址")
+                            .setMessage("网络流")
                             .setView(editText)
                             .setPositiveButton("播放", new DialogInterface.OnClickListener() {
                                 @Override

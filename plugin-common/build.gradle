@@ -7,7 +7,7 @@ android {
         enabled true
     }
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 22
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"

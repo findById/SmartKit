@@ -26,6 +26,7 @@ import org.cn.iot.smartkit.R;
 import org.cn.plugin.common.optional.OptionalConst;
 import org.cn.plugin.common.optional.OptionalManager;
 import org.cn.plugin.message.MessageActivity;
+import org.cn.plugin.message.MessageConst;
 import org.cn.plugin.message.model.Message;
 import org.cn.plugin.message.model.MessageType;
 import org.cn.plugin.message.service.MessageService;
@@ -60,7 +61,7 @@ public class SimpleActivity extends AppCompatActivity {
             deviceId = "ESP8266";
         }
 
-        registerReceiver(receiver, new IntentFilter(MessageActivity.ACTION_MESSAGE));
+        registerReceiver(receiver, new IntentFilter(MessageConst.ACTION_MESSAGE_ARRIVED));
 
         initView();
         initData();
@@ -119,9 +120,9 @@ public class SimpleActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
-                case MessageActivity.ACTION_MESSAGE: {
+                case MessageConst.ACTION_MESSAGE_ARRIVED: {
                     try {
-                        Message message = (Message) intent.getSerializableExtra(MessageActivity.EXTRA_MESSAGE_DATA);
+                        Message message = (Message) intent.getSerializableExtra(MessageConst.EXTRA_MESSAGE_DATA);
                         if (message.producerId.equals(deviceId) || "ESP8266".equals(deviceId)) {
                             online = true;
                         }

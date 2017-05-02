@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringReader;
+import java.util.Locale;
 
 /**
  * Created by chenning on 17-1-13.
@@ -26,7 +27,7 @@ public class DeviceMessage implements Serializable {
         String line = null;
         try {
             while ((line = br.readLine()) != null) {
-                if (line.toUpperCase().startsWith(key.toUpperCase() + ":")) {
+                if (line.toUpperCase(Locale.getDefault()).startsWith(key.toUpperCase(Locale.getDefault()) + ":")) {
                     return line.substring(key.length() + 1).trim();
                 }
             }

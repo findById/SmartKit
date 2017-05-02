@@ -15,7 +15,6 @@
 
     <application
         android:name=".CoreApplication"
-        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -49,6 +48,19 @@
         <activity
             android:name="org.cn.iot.device.DeviceActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <receiver android:name=".simple.SimpleReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+
+                <action android:name="android.intent.action.MEDIA_MOUNTED" />
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+
+                <action android:name="action.message.arrived"></action>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

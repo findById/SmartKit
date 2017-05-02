@@ -19,6 +19,7 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="center_vertical"
+            android:contentDescription="@string/app_name"
             android:padding="5dp" />
 
         <LinearLayout
@@ -32,26 +33,24 @@
             <TextView
                 android:id="@+id/item_title"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="30dp"
                 android:gravity="center_vertical"
-                android:singleLine="true"
+                android:maxLines="1"
                 android:text="@{device.friendlyName}"
                 android:textColor="#333"
                 android:textSize="16sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="30dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="@{device.modelName}"
                     android:textColor="#FFb5b5b5"
                     android:textSize="12sp" />
@@ -60,9 +59,9 @@
                     android:id="@+id/item_permission"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:maxLines="1"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:singleLine="true"
                     android:text="@{device.id}"
                     android:textColor="#FFb5b5b5"
                     android:textSize="12sp" />
