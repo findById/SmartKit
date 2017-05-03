@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,6 +18,7 @@ import org.cn.iot.smartkit.common.OptionalActivity;
 import org.cn.iot.smartkit.simple.SimpleActivity;
 import org.cn.plugin.airkiss.SmartConfigActivity;
 import org.cn.plugin.common.permission.PermissionManager;
+import org.cn.plugin.dlna.utils.DeviceUtil;
 import org.cn.plugin.message.MessageActivity;
 
 public class MainActivity extends BaseActivity
@@ -33,8 +33,7 @@ public class MainActivity extends BaseActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
             }
