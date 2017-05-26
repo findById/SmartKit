@@ -24,7 +24,7 @@ public class SimpleReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (MessageConst.ACTION_MESSAGE_ARRIVED.equals(intent.getAction())) {
-            Message message = (Message) intent.getSerializableExtra(MessageConst.ACTION_MESSAGE_ARRIVED);
+            Message message = (Message) intent.getSerializableExtra(MessageConst.EXTRA_MESSAGE_DATA);
 
             if (hasNotify(message.msgType)) {
                 showNotification(context, message);
