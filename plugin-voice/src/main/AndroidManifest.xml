@@ -27,13 +27,13 @@
         <!-- 请填写真实的APP_ID API_KEY SECRET_KEY -->
         <meta-data
             android:name="com.baidu.speech.APP_ID"
-            android:value="" />
+            android:value="6210596" />
         <meta-data
             android:name="com.baidu.speech.API_KEY"
-            android:value="" />
+            android:value="F0E6y8XpwKfWNpBzyNxIqs3L" />
         <meta-data
             android:name="com.baidu.speech.SECRET_KEY"
-            android:value="" />
+            android:value="3b5315a0004c195ac0e96f46adc4f69b" />
 
         <service
             android:name="com.baidu.speech.VoiceRecognitionService"

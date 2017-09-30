@@ -94,7 +94,7 @@ public class DeviceActivity extends BaseActivity {
                     Toast.makeText(DeviceActivity.this, "请输入设备名", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                String type = ((DeviceType)mBinding.type.getSelectedItem()).getKey();
+                String type = ((DeviceType) mBinding.type.getSelectedItem()).getKey();
                 if (TextUtils.isEmpty(name)) {
                     Toast.makeText(DeviceActivity.this, "请选择设备类型", Toast.LENGTH_SHORT).show();
                     return;
@@ -105,7 +105,7 @@ public class DeviceActivity extends BaseActivity {
                 biz.put("name", name);
                 biz.put("type", type);
                 biz.put("description", mBinding.description.getText().toString());
-                biz.put("parentId", ((DeviceType)mBinding.parentId.getSelectedItem()).getKey());
+                biz.put("parentId", ((DeviceType) mBinding.parentId.getSelectedItem()).getKey());
 
                 JSONObject param = new JSONObject();
                 param.put("method", method);
@@ -157,7 +157,7 @@ public class DeviceActivity extends BaseActivity {
         types.add(new DeviceType("led", "LED"));
 
         ArrayAdapter<DeviceType> typesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, types);
-        typesAdapter.setDropDownViewResource(android.support.v7.appcompat.R.layout.support_simple_spinner_dropdown_item);
+//        typesAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
 
         mBinding.type.setAdapter(typesAdapter);
 
@@ -165,7 +165,7 @@ public class DeviceActivity extends BaseActivity {
         parent.add(new DeviceType("ESP8266", "ESP8266"));
 
         ArrayAdapter<DeviceType> parentAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, parent);
-        parentAdapter.setDropDownViewResource(android.support.v7.appcompat.R.layout.support_simple_spinner_dropdown_item);
+//        parentAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
 
         mBinding.parentId.setAdapter(parentAdapter);
     }
