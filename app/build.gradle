@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -22,27 +26,28 @@ android {
     }
     lintOptions {
         // build release 版本 时 开启lint 检测
-        checkReleaseBuilds true
+        checkReleaseBuilds false
         // lint 遇到 error 时继续 构建
-        abortOnError false
+        abortOnError true
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile("com.android.support.test.espresso:espresso-core:${espressoLibVersion}", {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile 'com.android.support:appcompat-v7:' + rootProject.ext.supportLibVersion
-    compile 'com.android.support:design:' + rootProject.ext.supportLibVersion
-    compile 'com.android.support.constraint:constraint-layout:' + rootProject.ext.constraintLayout
-    testCompile 'junit:junit:4.12'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
+    implementation "com.android.support:support-v4:${rootProject.ext.supportLibVersion}"
+    implementation "com.android.support:design:${rootProject.ext.supportLibVersion}"
+    implementation "com.android.support.constraint:constraint-layout:${rootProject.ext.constraintLibLayout}"
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation "com.android.support.test:runner:${rootProject.ext.testRunnerVersion}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:${rootProject.ext.testEspressoCoreVersion}"
+
     compile 'com.alibaba:fastjson:1.1.55.android'
 
     compile project(':plugin-airkiss')
     compile project(':plugin-message')
     compile project(':plugin-voice')
-    compile project(':plugin-device')
     compile project(path: ':plugin-common')
     compile project(path: ':plugin-dlna')
 }

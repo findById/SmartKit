@@ -26,15 +26,16 @@ android {
 
 dependencies {
     provided fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile("com.android.support.test.espresso:espresso-core:${espressoLibVersion}", {
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation("com.android.support.test.espresso:espresso-core:${rootProject.ext.testEspressoCoreVersion}", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     provided 'com.android.support:appcompat-v7:' + rootProject.ext.supportLibVersion
+    provided 'com.android.support:support-v4:' + rootProject.ext.supportLibVersion
     provided 'com.android.support:design:' + rootProject.ext.supportLibVersion
-    testCompile 'junit:junit:4.12'
 
     compile project(':plugin-rpc')
-    compile project(':plugin-message')
+    provided project(':plugin-message')
 
     provided 'com.alibaba:fastjson:1.1.55.android'
 }

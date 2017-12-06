@@ -12,7 +12,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
-import org.cn.iot.device.DeviceListActivity;
 import org.cn.iot.smartkit.common.BaseActivity;
 import org.cn.iot.smartkit.common.OptionalActivity;
 import org.cn.iot.smartkit.simple.SimpleActivity;
@@ -115,8 +114,8 @@ public class MainActivity extends BaseActivity
                 break;
             }
             case R.id.nav_device: {
-                Intent intent = new Intent(this, DeviceListActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(this, DeviceListActivity.class);
+//                startActivity(intent);
                 break;
             }
             case R.id.nav_timeline: {

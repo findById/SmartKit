@@ -22,7 +22,7 @@ android {
 
 dependencies {
     provided fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile("com.android.support.test.espresso:espresso-core:${espressoLibVersion}", {
+    androidTestCompile("com.android.support.test.espresso:espresso-core:${rootProject.ext.testEspressoCoreVersion}", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     provided 'com.android.support:appcompat-v7:' + rootProject.ext.supportLibVersion

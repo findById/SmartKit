@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
-import org.cn.iot.device.DeviceConst;
 import org.cn.plugin.common.optional.OptionalManager;
 import org.cn.plugin.message.MessageConst;
 import org.cn.plugin.message.service.MessageService;
@@ -21,7 +20,7 @@ public class CoreApplication extends Application {
         OptionalManager.init(getApplicationContext());
         OrmHelper.init(getApplicationContext());
 
-        DeviceConst.init();
+//        DeviceConst.init();
         MessageConst.init();
         MessageService.start(getApplicationContext());
 
